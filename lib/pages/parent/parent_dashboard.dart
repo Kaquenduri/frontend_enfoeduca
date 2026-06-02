@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../services/api_service.dart';
 
 class ParentDashboard extends StatelessWidget {
   const ParentDashboard({super.key});
+
+  void _logout(BuildContext context) async {
+    await ApiService.logout();
+    if (context.mounted) context.go('/login');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +16,7 @@ class ParentDashboard extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Parent Dashboard'),
         actions: [
-          IconButton(icon: const Icon(Icons.logout), onPressed: () => context.go('/login')),
+          IconButton(icon: const Icon(Icons.logout), onPressed: () => _logout(context)),
         ],
       ),
       body: ListView(

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'router/app_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+Future<void> main() async {
   usePathUrlStrategy();
+  await Supabase.initialize(
+    url: 'https://vijngqyvewudkbqinvih.supabase.co',
+    anonKey: 'sb_publishable_jXJH3J_gDFe1jdembzGI3A_CIe9dxrG',
+  );
   runApp(const MyApp());
 }
 

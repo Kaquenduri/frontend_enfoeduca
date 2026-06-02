@@ -29,14 +29,14 @@ class ApiConstants {
   static const String directors = '$usersServiceBaseUrl/directors';
 
   // Endpoints Académicos
-  static const String academicPeriods = '$academicServiceBaseUrl/periods';
+  static const String academicPeriods = '$academicServiceBaseUrl/period';
   static const String courses = '$academicServiceBaseUrl/courses';
   static const String sections = '$academicServiceBaseUrl/sections';
-  static const String sessions = '$academicServiceBaseUrl/sessions';
+  static const String sessions = '$academicServiceBaseUrl/courses/sessions';
   static const String assignments = '$academicServiceBaseUrl/assignments';
   static const String attendances = '$academicServiceBaseUrl/attendances';
   static const String tasks = '$academicServiceBaseUrl/tasks';
-  static const String materials = '$academicServiceBaseUrl/materials';
+  static const String materials = '$academicServiceBaseUrl/courses/materials';
   static const String taskSubmissions =
-      '$academicServiceBaseUrl/task-submissions';
+      '$academicServiceBaseUrl/tasks/submission';
 }
