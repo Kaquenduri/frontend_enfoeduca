@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "999993339088",
+    "project_id": "enfoeduca-lms",
+    "storage_bucket": "enfoeduca-lms.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:999993339088:android:a053df154a0344d60f82d5",
+        "android_client_info": {
+          "package_name": "com.example.frontend_enfoeduca"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCM9riSUozWKliEBoeTUj7pGhdvJzmBz9E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

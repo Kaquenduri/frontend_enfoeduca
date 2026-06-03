@@ -1,22 +1,29 @@
 import 'package:go_router/go_router.dart';
 import '../pages/auth/login_screen.dart';
+
+import '../pages/admin/admin_layout.dart';
 import '../pages/admin/admin_dashboard.dart';
-import '../pages/teacher/teacher_dashboard.dart';
+import '../pages/admin/admin_courses_crud_view.dart';
+import '../pages/admin/admin_users_crud_view.dart';
+import '../pages/admin/admin_periods_crud_view.dart';
+import '../pages/admin/admin_sections_crud_view.dart';
+import '../pages/admin/admin_assignments_crud_view.dart';
 
 import '../pages/student/student_dashboard.dart';
 import '../pages/student/StudentCourseDetailsView.dart.dart';
 import '../pages/student/student_session_materials_view.dart';
 import '../pages/student/StudentTaskDetailView.dart';
 
+import '../pages/teacher/teacher_dashboard.dart';
 import '../pages/teacher/TeacherCourseDetailsView.dart';
 import '../pages/teacher/TeacherSessionMaterialsView.dart';
 import '../pages/teacher/TeacherTaskSubmissionsView.dart';
 import '../pages/teacher/TeacherSubmissionDetailView.dart';
 
 import '../pages/parent/parent_dashboard.dart';
+import '../pages/parent/Parent_student_details_view.dart';
+
 import '../pages/director/director_dashboard.dart';
-import '../pages/common/dynamic_crud_screen.dart';
-import '../api/api_constants.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/login',
@@ -24,18 +31,35 @@ final appRouter = GoRouter(
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
 
     // Admin
-    GoRoute(
-      path: '/admin',
-      builder: (context, state) => const AdminDashboard(),
+    ShellRoute(
+      builder: (context, state, child) {
+        // Envolvemos las pantallas internas en el AdminLayout
+        return AdminLayout(child: child);
+      },
       routes: [
         GoRoute(
-          path: 'users',
-          builder: (context, state) => const DynamicCrudScreen(
-            title: 'Usuarios',
-            endpoint: ApiConstants.users,
-            canAdd: true,
-            canDelete: true,
-          ),
+          path: '/admin',
+          builder: (context, state) => const AdminDashboardView(),
+        ),
+        GoRoute(
+          path: '/admin/courses',
+          builder: (context, state) => const AdminCoursesCrudView(),
+        ),
+        GoRoute(
+          path: '/admin/users',
+          builder: (context, state) => const AdminUsersCrudView(),
+        ),
+        GoRoute(
+          path: '/admin/periods',
+          builder: (context, state) => const AdminPeriodsCrudView(),
+        ),
+        GoRoute(
+          path: '/admin/sections',
+          builder: (context, state) => const AdminSectionsCrudView(),
+        ),
+        GoRoute(
+          path: '/admin/assignments',
+          builder: (context, state) => const AdminAssignmentsCrudView(),
         ),
       ],
     ),
@@ -197,25 +221,12 @@ final appRouter = GoRouter(
       builder: (context, state) => const ParentDashboard(),
       routes: [
         GoRoute(
-          path: 'attendances',
-          builder: (context, state) => const DynamicCrudScreen(
-            title: 'Asistencias',
-            endpoint: ApiConstants.attendances,
-          ),
-        ),
-        GoRoute(
-          path: 'grades',
-          builder: (context, state) => const DynamicCrudScreen(
-            title: 'Notas',
-            endpoint: ApiConstants.taskSubmissions,
-          ),
-        ),
-        GoRoute(
-          path: 'tasks',
-          builder: (context, state) => const DynamicCrudScreen(
-            title: 'Tareas Pendientes',
-            endpoint: ApiConstants.tasks,
-          ),
+          path:
+              'student/:studentId', // Genera la ruta: /parent/student/cfdd7d0f-...
+          builder: (context, state) {
+            final studentId = state.pathParameters['studentId'] ?? '';
+            return ParentStudentDetailsView(studentId: studentId);
+          },
         ),
       ],
     ),
@@ -223,16 +234,8 @@ final appRouter = GoRouter(
     // Director
     GoRoute(
       path: '/director',
-      builder: (context, state) => const DirectorDashboard(),
-      routes: [
-        GoRoute(
-          path: 'analytics',
-          builder: (context, state) => const DynamicCrudScreen(
-            title: 'Analíticas',
-            endpoint: ApiConstants.courses,
-          ),
-        ),
-      ],
+      builder: (context, state) => const DirectorDashboardView(),
+      routes: [],
     ),
   ],
 );
