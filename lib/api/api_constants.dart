@@ -1,42 +1,38 @@
-/// Clase `ApiConstants`
-/// Contiene todas las URLs y rutas de los microservicios backend.
-/// Se centralizan aquí para facilitar cambios de dominio o puerto en el futuro.
+import '../config/environment.dart';
+
 class ApiConstants {
   // ==========================================
   // Base URLs para los microservicios (Backend)
   // ==========================================
-  static const String authServiceBaseUrl =
-      'https://auth-service-enfoenfoeduca-451053308845.europe-west1.run.app';
-  static const String usersServiceBaseUrl =
-      'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app';
-  static const String academicServiceBaseUrl =
-      'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app';
+  static String get authServiceBaseUrl => Environment.authServiceUrl;
+  static String get usersServiceBaseUrl => Environment.usersServiceUrl;
+  static String get academicServiceBaseUrl => Environment.academicServiceUrl;
 
   // ==========================================
   // Endpoints de Autenticación (Auth_Service)
   // ==========================================
-  static const String login = '$authServiceBaseUrl/auth/login';
-  static const String register =
+  static String get login => '$authServiceBaseUrl/auth/login';
+  static String get register =>
       '$authServiceBaseUrl/auth/register'; // Uso exclusivo para ADMIN
 
   // ==========================================
   // Endpoints de Gestión de Usuarios (Users_Service)
   // ==========================================
-  static const String users = '$usersServiceBaseUrl/users';
-  static const String students = '$usersServiceBaseUrl/students';
-  static const String teachers = '$usersServiceBaseUrl/teachers';
-  static const String parents = '$usersServiceBaseUrl/parents';
-  static const String directors = '$usersServiceBaseUrl/directors';
+  static String get users => '$usersServiceBaseUrl/users';
+  static String get students => '$usersServiceBaseUrl/students';
+  static String get teachers => '$usersServiceBaseUrl/teachers';
+  static String get parents => '$usersServiceBaseUrl/parents';
+  static String get directors => '$usersServiceBaseUrl/directors';
 
   // Endpoints Académicos
-  static const String academicPeriods = '$academicServiceBaseUrl/period';
-  static const String courses = '$academicServiceBaseUrl/courses';
-  static const String sections = '$academicServiceBaseUrl/sections';
-  static const String sessions = '$academicServiceBaseUrl/courses/sessions';
-  static const String assignments = '$academicServiceBaseUrl/assignments';
-  static const String attendances = '$academicServiceBaseUrl/attendances';
-  static const String tasks = '$academicServiceBaseUrl/tasks';
-  static const String materials = '$academicServiceBaseUrl/courses/materials';
-  static const String taskSubmissions =
+  static String get academicPeriods => '$academicServiceBaseUrl/period';
+  static String get courses => '$academicServiceBaseUrl/courses';
+  static String get sections => '$academicServiceBaseUrl/sections';
+  static String get sessions => '$academicServiceBaseUrl/courses/sessions';
+  static String get assignments => '$academicServiceBaseUrl/assignments';
+  static String get attendances => '$academicServiceBaseUrl/attendances';
+  static String get tasks => '$academicServiceBaseUrl/tasks';
+  static String get materials => '$academicServiceBaseUrl/courses/materials';
+  static String get taskSubmissions =>
       '$academicServiceBaseUrl/tasks/submission';
 }

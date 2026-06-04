@@ -1,8 +1,8 @@
 // ignore_for_file: use_build_context_synchronously, file_names
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:go_router/go_router.dart';
+import '../../services/api_client.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'; // <-- Importamos Supabase nativo
@@ -64,12 +64,7 @@ class _StudentTaskDetailViewState extends State<StudentTaskDetailView> {
   }
 
   Future<Map<String, dynamic>> _fetchTaskDetails(String taskId) async {
-    final response = await http.get(
-      Uri.parse(
-        'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/tasks/$taskId',
-      ),
-      headers: {'Authorization': 'Bearer ${await ApiService.getToken()}'},
-    );
+    final response = await ApiClient.get(ServiceType.academic, '/tasks/$taskId');
 
     if (response.statusCode == 200) {
       return json.decode(response.body) as Map<String, dynamic>;
@@ -129,14 +124,6 @@ class _StudentTaskDetailViewState extends State<StudentTaskDetailView> {
       // 2. DETECTAR SI ES CREACIÓN (POST) O ACTUALIZACIÓN (PUT)
       final bool isNewSubmission = submissionId.isEmpty;
 
-      final Uri url = isNewSubmission
-          ? Uri.parse(
-              'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/submissions/submission/create',
-            ) // RUTA POST
-          : Uri.parse(
-              'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/submissions/submission/$submissionId',
-            ); // RUTA PUT
-
       // 3. Preparar el cuerpo de la petición según lo que pida tu backend
       final Map<String, dynamic> requestBody = {'file_url': publicFileUrl};
 
@@ -149,26 +136,20 @@ class _StudentTaskDetailViewState extends State<StudentTaskDetailView> {
       }
 
       debugPrint(
-        'Enviando petición (${isNewSubmission ? "POST" : "PUT"}) a: $url',
+        'Enviando petición (${isNewSubmission ? "POST" : "PUT"}) para la entrega',
       );
 
       // 4. Ejecutar la petición HTTP correcta
-      final http.Response apiResponse = isNewSubmission
-          ? await http.post(
-              url,
-              headers: {
-                'Authorization': 'Bearer ${await ApiService.getToken()}',
-                'Content-Type': 'application/json',
-              },
-              body: json.encode(requestBody),
+      final apiResponse = isNewSubmission
+          ? await ApiClient.post(
+              ServiceType.academic,
+              '/submissions/submission/create',
+              body: requestBody,
             )
-          : await http.put(
-              url,
-              headers: {
-                'Authorization': 'Bearer ${await ApiService.getToken()}',
-                'Content-Type': 'application/json',
-              },
-              body: json.encode(requestBody),
+          : await ApiClient.put(
+              ServiceType.academic,
+              '/submissions/submission/$submissionId',
+              body: requestBody,
             );
 
       if (apiResponse.statusCode == 200 ||

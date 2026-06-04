@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
+import '../../services/api_client.dart';
 import '../../services/api_service.dart';
 
 // =========================================================================
@@ -177,18 +177,8 @@ class _ParentStudentsDashboardState extends State<ParentStudentsDashboard> {
         );
       }
 
-      final Map<String, String> requestHeaders = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
-
       // 3. Consumir el endpoint global de estudiantes con el slash al final
-      final response = await http.get(
-        Uri.parse(
-          'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/students/',
-        ),
-        headers: requestHeaders,
-      );
+      final response = await ApiClient.get(ServiceType.users, '/students/');
 
       if (response.statusCode != 200) {
         throw Exception(

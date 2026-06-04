@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import '../../services/api_service.dart';
+import '../../services/api_client.dart';
 
 class AdminPeriodsCrudView extends StatefulWidget {
   const AdminPeriodsCrudView({super.key});
@@ -39,16 +38,7 @@ class _AdminPeriodsCrudViewState extends State<AdminPeriodsCrudView> {
   Future<void> _fetchPeriods() async {
     setState(() => _isLoading = true);
     try {
-      final String? token = await ApiService.getToken();
-      final response = await http.get(
-        Uri.parse(
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/period/',
-        ),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-      );
+      final response = await ApiClient.get(ServiceType.academic, '/period/');
 
       if (response.statusCode == 200) {
         setState(() {
@@ -115,12 +105,6 @@ class _AdminPeriodsCrudViewState extends State<AdminPeriodsCrudView> {
       return;
     }
 
-    final String? token = await ApiService.getToken();
-    final Map<String, String> headers = {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    };
-
     // Construcción del JSON String en formato ISO 8601 completo
     final Map<String, dynamic> bodyData = {
       "name": _nameController.text.trim(),
@@ -131,26 +115,17 @@ class _AdminPeriodsCrudViewState extends State<AdminPeriodsCrudView> {
     setState(() => _isLoading = true);
 
     try {
-      http.Response response;
-      if (_editingPeriodId == null) {
-        // MODO CREAR
-        response = await http.post(
-          Uri.parse(
-            'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/period/create',
-          ),
-          headers: headers,
-          body: json.encode(bodyData),
-        );
-      } else {
-        // MODO MODIFICAR
-        response = await http.put(
-          Uri.parse(
-            'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/period/$_editingPeriodId',
-          ),
-          headers: headers,
-          body: json.encode(bodyData),
-        );
-      }
+      final response = _editingPeriodId == null
+          ? await ApiClient.post(
+              ServiceType.academic,
+              '/period/create',
+              body: bodyData,
+            )
+          : await ApiClient.put(
+              ServiceType.academic,
+              '/period/$_editingPeriodId',
+              body: bodyData,
+            );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         _showSnackBar(
@@ -205,16 +180,7 @@ class _AdminPeriodsCrudViewState extends State<AdminPeriodsCrudView> {
 
     setState(() => _isLoading = true);
     try {
-      final String? token = await ApiService.getToken();
-      final response = await http.delete(
-        Uri.parse(
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/period/$periodId',
-        ),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-      );
+      final response = await ApiClient.delete(ServiceType.academic, '/period/$periodId');
 
       if (response.statusCode == 200 || response.statusCode == 204) {
         _showSnackBar('Periodo removido del sistema.', Colors.orange);

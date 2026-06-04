@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart'; // Importación para decodificar el JWT en la vista
+import '../../services/api_client.dart';
 import '../../services/api_service.dart';
 import '../../models/TeacherAssignment.dart';
 
@@ -36,19 +36,8 @@ class TeacherDashboard extends StatelessWidget {
         );
       }
 
-      // Encabezados con el Token de autorización
-      final Map<String, String> requestHeaders = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
-
       // 3. Petición HTTP al endpoint global de asignaciones
-      final response = await http.get(
-        Uri.parse(
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/assignments/',
-        ),
-        headers: requestHeaders,
-      );
+      final response = await ApiClient.get(ServiceType.academic, '/assignments/');
 
       if (response.statusCode != 200) {
         throw Exception('Error al cargar asignaciones: ${response.statusCode}');

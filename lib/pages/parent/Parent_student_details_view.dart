@@ -2,8 +2,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
-import '../../services/api_service.dart';
+import '../../services/api_client.dart';
 
 class ParentStudentDetailsView extends StatefulWidget {
   final String studentId;
@@ -35,16 +34,7 @@ class _ParentStudentDetailsViewState extends State<ParentStudentDetailsView> {
   // HTTP GET & FILTER: Asistencias
   Future<List<dynamic>> _fetchFilteredAttendances() async {
     try {
-      final String? token = await ApiService.getToken();
-      final response = await http.get(
-        Uri.parse(
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/attendances/',
-        ),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-      );
+      final response = await ApiClient.get(ServiceType.academic, '/attendances/');
 
       if (response.statusCode != 200) {
         throw Exception('Error en asistencias (${response.statusCode})');
@@ -63,16 +53,7 @@ class _ParentStudentDetailsViewState extends State<ParentStudentDetailsView> {
   // HTTP GET & FILTER: Tareas / Notas (Submissions)
   Future<List<dynamic>> _fetchFilteredSubmissions() async {
     try {
-      final String? token = await ApiService.getToken();
-      final response = await http.get(
-        Uri.parse(
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/submissions/submission/',
-        ),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-      );
+      final response = await ApiClient.get(ServiceType.academic, '/submissions/submission/');
 
       if (response.statusCode != 200) {
         throw Exception('Error en calificaciones (${response.statusCode})');

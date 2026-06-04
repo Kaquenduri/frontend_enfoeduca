@@ -1,9 +1,8 @@
 // ignore_for_file: use_build_context_synchronously, deprecated_member_use, file_names
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:go_router/go_router.dart';
-import '../../services/api_service.dart';
+import '../../services/api_client.dart';
 import '../../models/Student.dart'; // <-- Asegúrate de que la ruta sea correcta según tu proyecto
 import 'package:file_picker/file_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -55,14 +54,7 @@ class _TeacherSessionMaterialsViewState
   Future<Map<String, dynamic>> _fetchSessionDetailsAndNames(
     String sessionId,
   ) async {
-    final token = await ApiService.getToken();
-
-    final response = await http.get(
-      Uri.parse(
-        'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/courses/sessions/$sessionId',
-      ),
-      headers: {'Authorization': 'Bearer $token'},
-    );
+    final response = await ApiClient.get(ServiceType.academic, '/courses/sessions/$sessionId');
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body) as Map<String, dynamic>;
@@ -84,12 +76,7 @@ class _TeacherSessionMaterialsViewState
           try {
             await Future.wait(
               missingIds.map((studentId) async {
-                final studentRes = await http.get(
-                  Uri.parse(
-                    'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/students/$studentId',
-                  ),
-                  headers: {'Authorization': 'Bearer $token'},
-                );
+                final studentRes = await ApiClient.get(ServiceType.users, '/students/$studentId');
 
                 if (studentRes.statusCode == 200) {
                   final studentData =
@@ -296,25 +283,17 @@ class _TeacherSessionMaterialsViewState
                         );
 
                         // 3. MANDAR LA URL Y LOS CAMPOS EN JSON A TU API POST
-                        final token = await ApiService.getToken();
-                        final uri = Uri.parse(
-                          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/courses/materials/create',
-                        );
-
-                        final response = await http.post(
-                          uri,
-                          headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer $token',
-                          },
-                          body: json.encode({
+                        final response = await ApiClient.post(
+                          ServiceType.academic,
+                          '/courses/materials/create',
+                          body: {
                             "session_id": widget.sessionId,
                             "title": titleController.text,
                             "file_type": '.$fileExtension',
                             "file_url":
                                 publicFileUrl, // Aquí inyectamos la URL del bucket automáticamente
                             "description": descriptionController.text,
-                          }),
+                          },
                         );
 
                         if (response.statusCode == 201 ||
@@ -459,26 +438,18 @@ class _TeacherSessionMaterialsViewState
                 Navigator.pop(context);
 
                 try {
-                  final token = await ApiService.getToken();
-                  final String targetUrl =
-                      'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/tasks/create';
+                  debugPrint('=== ENVIANDO POST TAREA ===');
 
-                  debugPrint('=== ENVIANDO POST TAREA A: $targetUrl ===');
-
-                  final res = await http.post(
-                    Uri.parse(targetUrl),
-                    headers: {
-                      'Content-Type': 'application/json',
-                      'Accept': 'application/json',
-                      'Authorization': 'Bearer $token',
-                    },
-                    body: json.encode({
+                  final res = await ApiClient.post(
+                    ServiceType.academic,
+                    '/tasks/create',
+                    body: {
                       "session_id": widget.sessionId,
                       "title": title,
                       "description": description,
                       "start_date": sDateIso,
                       "due_date": dDateIso,
-                    }),
+                    },
                   );
 
                   debugPrint(
@@ -531,8 +502,6 @@ class _TeacherSessionMaterialsViewState
     });
 
     try {
-      final token = await ApiService.getToken();
-
       // Recorremos secuencialmente cada una de las asistencias locales modificadas
       for (var att in _localAttendances) {
         final String attendanceId = att['attendance_id'] ?? '';
@@ -540,18 +509,13 @@ class _TeacherSessionMaterialsViewState
 
         if (attendanceId.isNotEmpty) {
           // Hacemos el PUT usando la URL dinámica con el ID de la asistencia
-          await http.put(
-            Uri.parse(
-              'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/attendances/$attendanceId',
-            ),
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer $token',
-            },
-            body: json.encode({
+          await ApiClient.put(
+            ServiceType.academic,
+            '/attendances/$attendanceId',
+            body: {
               "status":
                   currentStatus, // Envía 'PRESENT' o 'FALTA' según el Switch
-            }),
+            },
           );
         }
       }

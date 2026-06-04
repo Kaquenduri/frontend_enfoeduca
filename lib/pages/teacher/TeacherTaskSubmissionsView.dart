@@ -1,9 +1,8 @@
 // ignore_for_file: file_names
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:go_router/go_router.dart';
-import '../../services/api_service.dart';
+import '../../services/api_client.dart';
 import '../../models/Student.dart';
 
 class TeacherTaskSubmissionsView extends StatefulWidget {
@@ -44,13 +43,7 @@ class _TeacherTaskSubmissionsViewState
   }
 
   Future<Map<String, dynamic>> _fetchTaskDetailsAndNames(String taskId) async {
-    final token = await ApiService.getToken();
-    final response = await http.get(
-      Uri.parse(
-        'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/tasks/$taskId',
-      ),
-      headers: {'Authorization': 'Bearer $token'},
-    );
+    final response = await ApiClient.get(ServiceType.academic, '/tasks/$taskId');
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body) as Map<String, dynamic>;
@@ -70,12 +63,7 @@ class _TeacherTaskSubmissionsViewState
           try {
             await Future.wait(
               missingIds.map((studentId) async {
-                final studentRes = await http.get(
-                  Uri.parse(
-                    'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/students/$studentId',
-                  ),
-                  headers: {'Authorization': 'Bearer $token'},
-                );
+                final studentRes = await ApiClient.get(ServiceType.users, '/students/$studentId');
 
                 if (studentRes.statusCode == 200) {
                   final studentData =

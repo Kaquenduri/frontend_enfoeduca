@@ -3,12 +3,11 @@ import 'dart:convert';
 import 'dart:async'; // Para manejar el StreamSubscription del Listener de Google
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:supabase_flutter/supabase_flutter.dart'; // <--- IMPORTACIÓN DE SUPABASE
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../services/api_client.dart'; // <--- IMPORTACIÓN DE SUPABASE
 import 'package:url_launcher/url_launcher.dart'; // <--- IMPORTACIÓN PARA REDIRECCIÓN EN WEB
-import '../../api/api_constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -87,9 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
         googleIdToken = session.accessToken;
       }
 
-      print(
-        "📢 [LMS LOG] Token obtenido de Google: ${'SÍ TIENE TOKEN'}",
-      );
+      print("📢 [LMS LOG] Token obtenido de Google: ${'SÍ TIENE TOKEN'}");
       print("📢 [LMS LOG] Usuario obtenido de Google: ${user?.email}");
 
       if (user != null && googleIdToken.isNotEmpty) {
@@ -100,14 +97,13 @@ class _LoginScreenState extends State<LoginScreen> {
         });
 
         try {
-          const String googleLoginUrl =
-              'https://auth-service-enfoenfoeduca-451053308845.europe-west1.run.app/auth/google-login';
-          print("🌐 [LMS LOG] Enviando petición POST a: $googleLoginUrl");
+          print("🌐 [LMS LOG] Enviando petición POST a: /auth/google-login");
 
-          final response = await http.post(
-            Uri.parse(googleLoginUrl),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({'id_token': googleIdToken}),
+          final response = await ApiClient.post(
+            ServiceType.auth,
+            '/auth/google-login',
+            body: {'id_token': googleIdToken},
+            requireAuth: false,
           );
 
           print(
@@ -198,13 +194,14 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final response = await http.post(
-        Uri.parse(ApiConstants.login),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
+      final response = await ApiClient.post(
+        ServiceType.auth,
+        '/auth/login',
+        body: {
           'email': _emailController.text.trim(),
           'password': _passwordController.text,
-        }),
+        },
+        requireAuth: false,
       );
 
       if (response.statusCode == 200) {
@@ -214,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         final errorData = jsonDecode(response.body);
         setState(() {
-          _errorMessage = errorData['message'] ?? 'Error desconocido';
+          _errorMessage = errorData['error'] ?? 'Error desconocido';
         });
       }
     } catch (e) {

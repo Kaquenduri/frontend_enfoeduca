@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
-import '../../services/api_service.dart';
+import '../../services/api_client.dart';
 
 class AdminCoursesCrudView extends StatefulWidget {
   const AdminCoursesCrudView({super.key});
@@ -42,25 +41,9 @@ class _AdminCoursesCrudViewState extends State<AdminCoursesCrudView> {
   Future<void> _fetchInitialData() async {
     setState(() => _isLoading = true);
     try {
-      final String? token = await ApiService.getToken();
-      final Map<String, String> headers = {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      };
-
       final responses = await Future.wait([
-        http.get(
-          Uri.parse(
-            'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/courses/',
-          ),
-          headers: headers,
-        ),
-        http.get(
-          Uri.parse(
-            'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/period/',
-          ),
-          headers: headers,
-        ),
+        ApiClient.get(ServiceType.academic, '/courses/'),
+        ApiClient.get(ServiceType.academic, '/period/'),
       ]);
 
       if (responses[0].statusCode == 200 && responses[1].statusCode == 200) {
@@ -82,12 +65,6 @@ class _AdminCoursesCrudViewState extends State<AdminCoursesCrudView> {
   Future<void> _saveCourse() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final String? token = await ApiService.getToken();
-    final Map<String, String> headers = {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    };
-
     final Map<String, dynamic> bodyData = {
       "name": _nameController.text.trim(),
       "description": _descriptionController.text.trim(),
@@ -97,24 +74,18 @@ class _AdminCoursesCrudViewState extends State<AdminCoursesCrudView> {
     setState(() => _isLoading = true);
 
     try {
-      http.Response response;
+      dynamic response;
       if (_editingCourseId == null) {
-        // MODO CREACIÓN
-        response = await http.post(
-          Uri.parse(
-            'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/courses/create',
-          ),
-          headers: headers,
-          body: json.encode(bodyData),
+        response = await ApiClient.post(
+          ServiceType.academic,
+          '/courses/create',
+          body: bodyData,
         );
       } else {
-        // MODO ACTUALIZACIÓN (/courses/id)
-        response = await http.put(
-          Uri.parse(
-            'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/courses/$_editingCourseId',
-          ),
-          headers: headers,
-          body: json.encode(bodyData),
+        response = await ApiClient.put(
+          ServiceType.academic,
+          '/courses/$_editingCourseId',
+          body: bodyData,
         );
       }
 
@@ -171,15 +142,9 @@ class _AdminCoursesCrudViewState extends State<AdminCoursesCrudView> {
 
     setState(() => _isLoading = true);
     try {
-      final String? token = await ApiService.getToken();
-      final response = await http.delete(
-        Uri.parse(
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/courses/$courseId',
-        ),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
+      final response = await ApiClient.delete(
+        ServiceType.academic,
+        '/courses/$courseId',
       );
 
       if (response.statusCode == 200 || response.statusCode == 204) {

@@ -1,9 +1,7 @@
 // ignore_for_file: file_names
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
-import '../../services/api_service.dart';
+import '../../services/api_client.dart';
 
 class TeacherSubmissionDetailView extends StatefulWidget {
   final String courseId;
@@ -58,22 +56,14 @@ class _TeacherSubmissionDetailViewState
     final messenger = ScaffoldMessenger.of(context);
 
     try {
-      final token = await ApiService.getToken();
-      // Ajusta la URL de calificación según el estándar de tu backend (usualmente /task-submissions/:id o similar)
-      final url =
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/submissions/submission/${widget.submissionId}';
-
-      final response = await http.put(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: json.encode({
+      final response = await ApiClient.put(
+        ServiceType.academic,
+        '/submissions/submission/${widget.submissionId}',
+        body: {
           "note": _noteController.text,
           "comments": _commentsController.text,
           "state": "GRADED",
-        }),
+        },
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:go_router/go_router.dart';
+import '../../services/api_client.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:url_launcher/url_launcher.dart'; // <--- 1. NUEVA IMPORTACIÓN
 import '../../services/api_service.dart';
@@ -48,12 +48,7 @@ class _StudentSessionMaterialsViewState
   }
 
   Future<Map<String, dynamic>> _fetchSessionDetails(String sessionId) async {
-    final response = await http.get(
-      Uri.parse(
-        'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/courses/sessions/$sessionId',
-      ),
-      headers: {'Authorization': 'Bearer ${await ApiService.getToken()}'},
-    );
+    final response = await ApiClient.get(ServiceType.academic, '/courses/sessions/$sessionId');
 
     if (response.statusCode == 200) {
       return json.decode(response.body) as Map<String, dynamic>;

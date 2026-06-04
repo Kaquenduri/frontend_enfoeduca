@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'dart:async'; // Necesario para el manejo del StreamSubscription
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../services/api_service.dart';
+import '../../services/api_client.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AdminUsersCrudView extends StatefulWidget {
@@ -132,60 +131,66 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
     });
   }
 
-  // Descarga concurrente de usuarios por rol + dependencias académicas
+  // Helper para extraer datos del usuario de forma segura, incluso si user_id
+  // contiene un error de rate-limit del backend en vez de los datos reales.
+  String _safeUserField(dynamic record, String field, [String fallback = '']) {
+    final userId = record['user_id'];
+    if (userId is Map<String, dynamic> && !userId.containsKey('error')) {
+      return userId[field]?.toString() ?? fallback;
+    }
+    // Si user_id tiene un error o no es un Map, intentar campos de nivel raíz
+    return record[field]?.toString() ?? fallback;
+  }
+
+  // Helper para hacer peticiones con reintentos automáticos si detectamos
+  // que el backend nos devolvió el error de rate limit de Supabase embebido.
+  Future<dynamic> _fetchWithRetry(ServiceType service, String endpoint, {int maxRetries = 3}) async {
+    for (int i = 0; i < maxRetries; i++) {
+      final response = await ApiClient.get(service, endpoint);
+      if (response.statusCode == 200) {
+        final bodyString = response.body;
+        // Supabase error embedded inside the user_id relation:
+        if (!bodyString.contains('"error":"Too many requests') && !bodyString.contains('"error": "Too many requests')) {
+          return response; // Respuesta exitosa y sin rate-limit
+        }
+      }
+      // Si falló o tiene error de rate limit embebido, esperamos un tiempo exponencial
+      await Future.delayed(Duration(milliseconds: 800 * (i + 1)));
+    }
+    // Si agotamos los reintentos, retornamos el último intento
+    return await ApiClient.get(service, endpoint);
+  }
+
+  // Descarga secuencial de usuarios por rol + dependencias académicas.
+  // Se secuencializan las llamadas al servicio de Users para evitar el rate-limit
+  // que Cloud Run aplica cuando recibe muchas peticiones simultáneas.
   Future<void> _fetchUsersAndDependencies() async {
     if (!mounted) return;
     setState(() => _isLoading = true);
     try {
-      final String? token = await ApiService.getToken();
-      final Map<String, String> headers = {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      };
+      // Usamos reintentos inteligentes para burlar el rate-limit intermitente
+      final studentsRes = await _fetchWithRetry(ServiceType.users, '/students/');
+      final teachersRes = await _fetchWithRetry(ServiceType.users, '/teachers/');
+      final parentsRes = await _fetchWithRetry(ServiceType.users, '/parents/');
+      final sectionsRes = await ApiClient.get(ServiceType.academic, '/sections/');
 
-      final responses = await Future.wait([
-        http.get(
-          Uri.parse(
-            'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/students/',
-          ),
-          headers: headers,
-        ),
-        http.get(
-          Uri.parse(
-            'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/teachers/',
-          ),
-          headers: headers,
-        ),
-        http.get(
-          Uri.parse(
-            'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/parents/',
-          ),
-          headers: headers,
-        ),
-        http.get(
-          Uri.parse(
-            'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/sections/',
-          ),
-          headers: headers,
-        ),
-      ]);
-
-      if (responses.any((res) => res.statusCode != 200)) {
+      final allResponses = [studentsRes, teachersRes, parentsRes, sectionsRes];
+      if (allResponses.any((res) => res?.statusCode != 200)) {
         throw Exception('Uno o más servicios no respondieron correctamente');
       }
 
-      final List<dynamic> students = json.decode(responses[0].body);
-      final List<dynamic> teachers = json.decode(responses[1].body);
-      final List<dynamic> parents = json.decode(responses[2].body);
-      final List<dynamic> sections = json.decode(responses[3].body);
+      final List<dynamic> students = json.decode(studentsRes.body);
+      final List<dynamic> teachers = json.decode(teachersRes.body);
+      final List<dynamic> parents = json.decode(parentsRes.body);
+      final List<dynamic> sections = json.decode(sectionsRes.body);
 
       List<Map<String, dynamic>> combined = [];
       for (var s in students) {
         combined.add({
           'id': s['student_id'],
-          'name': s['user_id']?['name'] ?? 'Sin Nombre',
-          'last_name': s['user_id']?['last_name'] ?? '',
-          'email': s['user_id']?['email'] ?? '',
+          'name': _safeUserField(s, 'name', 'Sin Nombre'),
+          'last_name': _safeUserField(s, 'last_name'),
+          'email': _safeUserField(s, 'email'),
           'role': 'ESTUDIANTE',
           'color': Colors.blue,
           'icon': Icons.school_rounded,
@@ -194,9 +199,9 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
       for (var t in teachers) {
         combined.add({
           'id': t['teacher_id'],
-          'name': t['user_id']?['name'] ?? 'Sin Nombre',
-          'last_name': t['user_id']?['last_name'] ?? '',
-          'email': t['user_id']?['email'] ?? '',
+          'name': _safeUserField(t, 'name', 'Sin Nombre'),
+          'last_name': _safeUserField(t, 'last_name'),
+          'email': _safeUserField(t, 'email'),
           'role': 'DOCENTE',
           'color': Colors.green,
           'icon': Icons.assignment_ind_rounded,
@@ -205,9 +210,9 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
       for (var p in parents) {
         combined.add({
           'id': p['parent_id'],
-          'name': p['user_id']?['name'] ?? 'Sin Nombre',
-          'last_name': p['user_id']?['last_name'] ?? '',
-          'email': p['user_id']?['email'] ?? '',
+          'name': _safeUserField(p, 'name', 'Sin Nombre'),
+          'last_name': _safeUserField(p, 'last_name'),
+          'email': _safeUserField(p, 'email'),
           'role': 'PADRE',
           'color': Colors.purple,
           'icon': Icons.people_alt_rounded,
@@ -273,42 +278,30 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
   // Guardar usuario consumiendo la API correspondiente a su rol
   Future<void> _createUser() async {
     if (!_formKey.currentState!.validate()) return;
-    final String? token = await ApiService.getToken();
-    final Map<String, String> headers = {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    };
     final Map<String, dynamic> basePayload = {
       "name": _nameController.text.trim(),
       "last_name": _lastNameController.text.trim(),
       "email": _emailController.text.trim(),
       "password": _passwordController.text.trim(),
     };
-    String targetUrl = '';
+    String endpoint = '';
 
     if (_selectedRole == 'TEACHER') {
-      targetUrl =
-          'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/teachers/create';
+      endpoint = '/teachers/create';
       basePayload['speciality'] = _specialityController.text.trim();
     } else if (_selectedRole == 'PARENT') {
-      targetUrl =
-          'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/parents/create';
+      endpoint = '/parents/create';
       basePayload['phone'] = _phoneController.text.trim();
       basePayload['occupation'] = _occupationController.text.trim();
     } else {
-      targetUrl =
-          'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/students/create';
+      endpoint = '/students/create';
       basePayload['parent_id'] = _selectedParentId;
       basePayload['id_section'] = _selectedSectionId;
     }
 
     setState(() => _isLoading = true);
     try {
-      final response = await http.post(
-        Uri.parse(targetUrl),
-        headers: headers,
-        body: json.encode(basePayload),
-      );
+      final response = await ApiClient.post(ServiceType.users, endpoint, body: basePayload);
       if (response.statusCode == 200 || response.statusCode == 201) {
         _showSnackBar(
           'Usuario registrado con éxito en el sistema.',
@@ -367,16 +360,7 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
 
     setState(() => _isLoading = true);
     try {
-      final String? token = await ApiService.getToken();
-      final response = await http.delete(
-        Uri.parse(
-          'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/$deletePath/$id',
-        ),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-      );
+      final response = await ApiClient.delete(ServiceType.users, '/$deletePath/$id');
       if (response.statusCode == 200 || response.statusCode == 204) {
         _showSnackBar('Usuario eliminado satisfactoriamente.', Colors.orange);
         _fetchUsersAndDependencies();
@@ -714,8 +698,8 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
                   ),
                   items: _parentsList.map((p) {
                     final String id = p['parent_id'] ?? '';
-                    final String name = p['user_id']?['name'] ?? 'Padre';
-                    final String lastName = p['user_id']?['last_name'] ?? '';
+                    final String name = _safeUserField(p, 'name', 'Padre');
+                    final String lastName = _safeUserField(p, 'last_name');
                     return DropdownMenuItem(
                       value: id,
                       child: Text(

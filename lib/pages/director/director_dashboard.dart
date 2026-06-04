@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:go_router/go_router.dart'; // Asegúrate de importar tu manejador de rutas
+import 'package:go_router/go_router.dart';
 
 import '../../services/api_service.dart';
+import '../../services/api_client.dart';
 
 class DirectorDashboardView extends StatefulWidget {
   const DirectorDashboardView({super.key});
@@ -71,50 +71,14 @@ class _DirectorDashboardViewState extends State<DirectorDashboardView> {
   }
 
   Future<Map<String, dynamic>> _fetchAllDirectorData() async {
-    final String? token = await ApiService.getToken();
-    final Map<String, String> headers = {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    };
-
     // Orquestador de peticiones concurrentes
     final futures = await Future.wait([
-      http.get(
-        Uri.parse(
-          'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/students/',
-        ),
-        headers: headers,
-      ),
-      http.get(
-        Uri.parse(
-          'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/teachers/',
-        ),
-        headers: headers,
-      ),
-      http.get(
-        Uri.parse(
-          'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/parents/',
-        ),
-        headers: headers,
-      ),
-      http.get(
-        Uri.parse(
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/courses/',
-        ),
-        headers: headers,
-      ),
-      http.get(
-        Uri.parse(
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/sections/',
-        ),
-        headers: headers,
-      ),
-      http.get(
-        Uri.parse(
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/attendances/',
-        ),
-        headers: headers,
-      ),
+      ApiClient.get(ServiceType.users, '/students/'),
+      ApiClient.get(ServiceType.users, '/teachers/'),
+      ApiClient.get(ServiceType.users, '/parents/'),
+      ApiClient.get(ServiceType.academic, '/courses/'),
+      ApiClient.get(ServiceType.academic, '/sections/'),
+      ApiClient.get(ServiceType.academic, '/attendances/'),
     ]);
 
     for (var response in futures) {

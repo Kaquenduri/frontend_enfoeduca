@@ -3,12 +3,15 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'router/app_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+
   usePathUrlStrategy();
   await Supabase.initialize(
-    url: 'https://vijngqyvewudkbqinvih.supabase.co',
-    anonKey: 'sb_publishable_jXJH3J_gDFe1jdembzGI3A_CIe9dxrG',
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
   runApp(const MyApp());
 }

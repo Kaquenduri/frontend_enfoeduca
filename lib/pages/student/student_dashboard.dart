@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart'; // Importación para decodificar el JWT en la vista
+import '../../services/api_client.dart';
 import '../../services/api_service.dart';
 import '../../models/Course.dart';
 
@@ -36,19 +36,8 @@ class StudentDashboard extends StatelessWidget {
         );
       }
 
-      // Reutilizamos el token de forma limpia para los encabezados de las peticiones
-      final Map<String, String> requestHeaders = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
-
       // 3. Consultar el perfil del estudiante usando el ID extraído del token
-      final studentResponse = await http.get(
-        Uri.parse(
-          'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/students/$studentId',
-        ),
-        headers: requestHeaders,
-      );
+      final studentResponse = await ApiClient.get(ServiceType.users, '/students/$studentId');
 
       if (studentResponse.statusCode != 200) {
         throw Exception(
@@ -67,12 +56,7 @@ class StudentDashboard extends StatelessWidget {
       final String targetSectionId = sectionInfo['id_section'];
 
       // 4. Consultar la lista completa de asignaciones académicas
-      final assignmentsResponse = await http.get(
-        Uri.parse(
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/assignments/',
-        ),
-        headers: requestHeaders,
-      );
+      final assignmentsResponse = await ApiClient.get(ServiceType.academic, '/assignments/');
 
       if (assignmentsResponse.statusCode != 200) {
         throw Exception('Error al descargar las asignaciones de cursos.');

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import '../../services/api_service.dart';
+import '../../services/api_client.dart';
 import 'package:go_router/go_router.dart';
 
 // Importa tu modelo Course
@@ -29,12 +28,7 @@ class _StudentCourseDetailsViewState extends State<StudentCourseDetailsView> {
 
   // Petición HTTP para obtener un solo curso detallado por ID
   Future<Course> _fetchCourseById(String id) async {
-    final response = await http.get(
-      Uri.parse(
-        'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/courses/$id',
-      ),
-      headers: {'Authorization': 'Bearer ${await ApiService.getToken()}'},
-    );
+    final response = await ApiClient.get(ServiceType.academic, '/courses/$id');
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);

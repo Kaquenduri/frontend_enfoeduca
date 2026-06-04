@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import '../../services/api_service.dart';
+import '../../services/api_client.dart';
 
 class AdminAssignmentsCrudView extends StatefulWidget {
   const AdminAssignmentsCrudView({super.key});
@@ -42,44 +41,13 @@ class _AdminAssignmentsCrudViewState extends State<AdminAssignmentsCrudView> {
   Future<void> _fetchAndSyncAllDependencies() async {
     setState(() => _isLoading = true);
     try {
-      final String? token = await ApiService.getToken();
-      final Map<String, String> headers = {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      };
-
       // Orquestación paralela de consultas a múltiples microservicios académicos y de usuarios
       final responses = await Future.wait([
-        http.get(
-          Uri.parse(
-            'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/assignments/',
-          ),
-          headers: headers,
-        ),
-        http.get(
-          Uri.parse(
-            'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/sections/',
-          ),
-          headers: headers,
-        ),
-        http.get(
-          Uri.parse(
-            'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/courses/',
-          ),
-          headers: headers,
-        ),
-        http.get(
-          Uri.parse(
-            'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/period/',
-          ),
-          headers: headers,
-        ),
-        http.get(
-          Uri.parse(
-            'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/teachers/',
-          ),
-          headers: headers,
-        ),
+        ApiClient.get(ServiceType.academic, '/assignments/'),
+        ApiClient.get(ServiceType.academic, '/sections/'),
+        ApiClient.get(ServiceType.academic, '/courses/'),
+        ApiClient.get(ServiceType.academic, '/period/'),
+        ApiClient.get(ServiceType.users, '/teachers/'),
       ]);
 
       if (responses.any((res) => res.statusCode != 200)) {
@@ -122,7 +90,6 @@ class _AdminAssignmentsCrudViewState extends State<AdminAssignmentsCrudView> {
   Future<void> _createAssignment() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final String? token = await ApiService.getToken();
     setState(() => _isLoading = true);
 
     final Map<String, dynamic> payload = {
@@ -133,15 +100,10 @@ class _AdminAssignmentsCrudViewState extends State<AdminAssignmentsCrudView> {
     };
 
     try {
-      final response = await http.post(
-        Uri.parse(
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/assignments/create',
-        ),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: json.encode(payload),
+      final response = await ApiClient.post(
+        ServiceType.academic,
+        '/assignments/create',
+        body: payload,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -200,17 +162,9 @@ class _AdminAssignmentsCrudViewState extends State<AdminAssignmentsCrudView> {
 
     setState(() => _isLoading = true);
     try {
-      final String? token = await ApiService.getToken();
-
-      // Asumiendo eliminación mediante paso de identificadores o query params comunes en microservicios
-      final response = await http.delete(
-        Uri.parse(
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/assignments/$sectionId/$courseId/$periodId/$teacherId',
-        ),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
+      final response = await ApiClient.delete(
+        ServiceType.academic,
+        '/assignments/$sectionId/$courseId/$periodId/$teacherId',
       );
 
       if (response.statusCode == 200 || response.statusCode == 204) {

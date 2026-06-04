@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import '../../services/api_service.dart';
+import '../../services/api_client.dart';
 
 class AdminSectionsCrudView extends StatefulWidget {
   const AdminSectionsCrudView({super.key});
@@ -50,25 +49,9 @@ class _AdminSectionsCrudViewState extends State<AdminSectionsCrudView> {
   Future<void> _fetchInitialData() async {
     setState(() => _isLoading = true);
     try {
-      final String? token = await ApiService.getToken();
-      final Map<String, String> headers = {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      };
-
       final responses = await Future.wait([
-        http.get(
-          Uri.parse(
-            'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/sections/',
-          ),
-          headers: headers,
-        ),
-        http.get(
-          Uri.parse(
-            'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/period/',
-          ),
-          headers: headers,
-        ),
+        ApiClient.get(ServiceType.academic, '/sections/'),
+        ApiClient.get(ServiceType.academic, '/period/'),
       ]);
 
       if (responses[0].statusCode == 200 && responses[1].statusCode == 200) {
@@ -92,12 +75,6 @@ class _AdminSectionsCrudViewState extends State<AdminSectionsCrudView> {
   Future<void> _saveSection() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final String? token = await ApiService.getToken();
-    final Map<String, String> headers = {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    };
-
     // Estructura idéntica al formato requerido por tu API
     final Map<String, dynamic> bodyData = {
       "id_period": _selectedPeriodId,
@@ -110,26 +87,17 @@ class _AdminSectionsCrudViewState extends State<AdminSectionsCrudView> {
     setState(() => _isLoading = true);
 
     try {
-      http.Response response;
-      if (_editingSectionId == null) {
-        // MODO CREACIÓN
-        response = await http.post(
-          Uri.parse(
-            'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/sections/create',
-          ),
-          headers: headers,
-          body: json.encode(bodyData),
-        );
-      } else {
-        // MODO ACTUALIZACIÓN
-        response = await http.put(
-          Uri.parse(
-            'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/sections/$_editingSectionId',
-          ),
-          headers: headers,
-          body: json.encode(bodyData),
-        );
-      }
+      final response = _editingSectionId == null
+          ? await ApiClient.post(
+              ServiceType.academic,
+              '/sections/create',
+              body: bodyData,
+            )
+          : await ApiClient.put(
+              ServiceType.academic,
+              '/sections/$_editingSectionId',
+              body: bodyData,
+            );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         _showSnackBar(
@@ -184,16 +152,7 @@ class _AdminSectionsCrudViewState extends State<AdminSectionsCrudView> {
 
     setState(() => _isLoading = true);
     try {
-      final String? token = await ApiService.getToken();
-      final response = await http.delete(
-        Uri.parse(
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/sections/$sectionId',
-        ),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-      );
+      final response = await ApiClient.delete(ServiceType.academic, '/sections/$sectionId');
 
       if (response.statusCode == 200 || response.statusCode == 204) {
         _showSnackBar('Sección eliminada de la base de datos.', Colors.orange);

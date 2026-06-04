@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import '../../services/api_service.dart';
-
+import '../../services/api_client.dart';
 class AdminDashboardView extends StatefulWidget {
   const AdminDashboardView({super.key});
 
@@ -25,48 +23,34 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
     });
   }
 
+  Future<dynamic> _fetchWithRetry(ServiceType service, String endpoint, {int maxRetries = 3}) async {
+    for (int i = 0; i < maxRetries; i++) {
+      final response = await ApiClient.get(service, endpoint);
+      if (response.statusCode == 200) {
+        final bodyString = response.body;
+        // Supabase error embedded inside the user_id relation:
+        if (!bodyString.contains('"error":"Too many requests') && !bodyString.contains('"error": "Too many requests')) {
+          return response; // Respuesta exitosa y sin rate-limit
+        }
+      }
+      // Si falló o tiene error de rate limit embebido, esperamos un tiempo exponencial
+      await Future.delayed(Duration(milliseconds: 800 * (i + 1)));
+    }
+    // Si agotamos los reintentos, retornamos el último intento
+    return await ApiClient.get(service, endpoint);
+  }
+
   Future<Map<String, dynamic>> _fetchAllAdminData() async {
-    final String? token = await ApiService.getToken();
-    final Map<String, String> headers = {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    };
+    // Peticiones con reintento automático para evitar rate-limits de Supabase embebidos
+    final studentsRes = await _fetchWithRetry(ServiceType.users, '/students/');
+    final teachersRes = await _fetchWithRetry(ServiceType.users, '/teachers/');
+    final parentsRes = await _fetchWithRetry(ServiceType.users, '/parents/');
+    // Academic service es un microservicio distinto, no compite por rate-limit
+    final coursesRes = await ApiClient.get(ServiceType.academic, '/courses/');
+    final periodsRes = await ApiClient.get(ServiceType.academic, '/period/');
 
-    // Peticiones en paralelo incluyendo el nuevo endpoint de periodos
-    final futures = await Future.wait([
-      http.get(
-        Uri.parse(
-          'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/students/',
-        ),
-        headers: headers,
-      ),
-      http.get(
-        Uri.parse(
-          'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/teachers/',
-        ),
-        headers: headers,
-      ),
-      http.get(
-        Uri.parse(
-          'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/parents/',
-        ),
-        headers: headers,
-      ),
-      http.get(
-        Uri.parse(
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/courses/',
-        ),
-        headers: headers,
-      ),
-      http.get(
-        Uri.parse(
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/period/',
-        ),
-        headers: headers,
-      ),
-    ]);
-
-    for (var response in futures) {
+    final allResponses = [studentsRes, teachersRes, parentsRes, coursesRes, periodsRes];
+    for (var response in allResponses) {
       if (response.statusCode != 200) {
         throw Exception(
           'Error en servicios del backend (Código: ${response.statusCode})',
@@ -74,11 +58,11 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
       }
     }
 
-    final List<dynamic> studentsList = json.decode(futures[0].body);
-    final List<dynamic> teachersList = json.decode(futures[1].body);
-    final List<dynamic> parentsList = json.decode(futures[2].body);
-    final List<dynamic> coursesList = json.decode(futures[3].body);
-    final List<dynamic> periodsList = json.decode(futures[4].body);
+    final List<dynamic> studentsList = json.decode(studentsRes.body);
+    final List<dynamic> teachersList = json.decode(teachersRes.body);
+    final List<dynamic> parentsList = json.decode(parentsRes.body);
+    final List<dynamic> coursesList = json.decode(coursesRes.body);
+    final List<dynamic> periodsList = json.decode(periodsRes.body);
 
     return {
       'total_students': studentsList.length,

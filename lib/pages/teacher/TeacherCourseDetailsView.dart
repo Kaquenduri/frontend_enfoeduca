@@ -1,9 +1,8 @@
 // ignore_for_file: file_names
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:go_router/go_router.dart';
-import '../../services/api_service.dart';
+import '../../services/api_client.dart';
 import '../../models/Course.dart';
 import '../../models/Student.dart';
 
@@ -38,12 +37,7 @@ class _TeacherCourseDetailsViewState extends State<TeacherCourseDetailsView> {
   }
 
   Future<Course> _fetchCourseById(String id) async {
-    final response = await http.get(
-      Uri.parse(
-        'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/courses/$id',
-      ),
-      headers: {'Authorization': 'Bearer ${await ApiService.getToken()}'},
-    );
+    final response = await ApiClient.get(ServiceType.academic, '/courses/$id');
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
@@ -62,15 +56,8 @@ class _TeacherCourseDetailsViewState extends State<TeacherCourseDetailsView> {
     required DateTime end,
   }) async {
     try {
-      final String token = await ApiService.getToken() ?? '';
-
       // 1. Obtener todos los alumnos del microservicio de usuarios
-      final studentsResponse = await http.get(
-        Uri.parse(
-          'https://users-service-enfoenfoeduca-451053308845.us-central1.run.app/students/',
-        ),
-        headers: {'Authorization': 'Bearer $token'},
-      );
+      final studentsResponse = await ApiClient.get(ServiceType.users, '/students/');
 
       if (studentsResponse.statusCode != 200) {
         throw Exception('Error al obtener la lista global de alumnos.');
@@ -87,20 +74,15 @@ class _TeacherCourseDetailsViewState extends State<TeacherCourseDetailsView> {
           .toList();
 
       // 3. Crear la sesión en el servicio académico
-      final sessionResponse = await http.post(
-        Uri.parse(
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/courses/sessions/create',
-        ),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: json.encode({
+      final sessionResponse = await ApiClient.post(
+        ServiceType.academic,
+        '/courses/sessions/create',
+        body: {
           "course_id": widget.courseId,
           "name": name,
           "start_time": start.toUtc().toIso8601String(),
           "end_time": end.toUtc().toIso8601String(),
-        }),
+        },
       );
 
       if (sessionResponse.statusCode != 201 &&
@@ -122,20 +104,15 @@ class _TeacherCourseDetailsViewState extends State<TeacherCourseDetailsView> {
         for (var student in sectionStudents) {
           final String currentPeriodId = student.section.idPeriod;
 
-          await http.post(
-            Uri.parse(
-              'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/attendances/create',
-            ),
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer $token',
-            },
-            body: json.encode({
+          await ApiClient.post(
+            ServiceType.academic,
+            '/attendances/create',
+            body: {
               "session_id": newSessionId,
               "student_id": student.studentId,
               "status": "EXCUSED",
               "period_id": currentPeriodId,
-            }),
+            },
           );
         }
       }
