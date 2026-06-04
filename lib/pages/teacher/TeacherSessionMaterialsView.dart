@@ -1,3 +1,4 @@
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use, file_names
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -324,7 +325,7 @@ class _TeacherSessionMaterialsViewState
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
-                                  '¡Material creado y guardado en el bucket con éxito! 🎉',
+                                  '¡Material creado y guardado en el bucket con éxito!',
                                 ),
                                 backgroundColor: Colors.teal,
                               ),
@@ -491,7 +492,7 @@ class _TeacherSessionMaterialsViewState
 
                       messenger.showSnackBar(
                         const SnackBar(
-                          content: Text('¡Tarea asignada con éxito! 🎉'),
+                          content: Text('¡Tarea asignada con éxito!'),
                           backgroundColor: Colors.teal,
                         ),
                       );
@@ -916,8 +917,8 @@ class _TeacherSessionMaterialsViewState
                     ),
                     leading: CircleAvatar(
                       backgroundColor: isPresent
-                          ? Colors.green.withOpacity(0.1)
-                          : Colors.red.withOpacity(0.1),
+                          ? Colors.green.withValues(alpha: 0.1)
+                          : Colors.red.withValues(alpha: 0.1),
                       child: Icon(
                         isPresent
                             ? Icons.check_circle_outline
@@ -943,9 +944,9 @@ class _TeacherSessionMaterialsViewState
                     ),
                     trailing: Switch(
                       value: isPresent,
-                      activeColor: Colors.green,
+                      activeThumbColor: Colors.green,
                       inactiveThumbColor: Colors.red,
-                      inactiveTrackColor: Colors.red.withOpacity(0.2),
+                      inactiveTrackColor: Colors.red.withValues(alpha: 0.2),
                       onChanged: (bool newValue) {
                         setState(() {
                           _localAttendances[index]['status'] = newValue

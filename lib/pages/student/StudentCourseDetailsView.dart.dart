@@ -136,7 +136,7 @@ class _StudentCourseDetailsViewState extends State<StudentCourseDetailsView> {
   // Listar los temas o sesiones dinámicamente usando lo que viene en el modelo Course
   Widget _buildSessionsTab(Course course) {
     // Validamos si el curso actual no tiene sesiones registradas en el backend
-    if (course.sessions == null || course.sessions!.isEmpty) {
+    if (course.sessions.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -207,7 +207,7 @@ class _StudentCourseDetailsViewState extends State<StudentCourseDetailsView> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 6,
             spreadRadius: 1,
             offset: const Offset(0, 2),
@@ -219,7 +219,7 @@ class _StudentCourseDetailsViewState extends State<StudentCourseDetailsView> {
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: statusColor.withOpacity(0.1),
+            color: statusColor.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(Icons.menu_book_rounded, color: statusColor, size: 22),
@@ -242,7 +242,7 @@ class _StudentCourseDetailsViewState extends State<StudentCourseDetailsView> {
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: statusColor.withOpacity(0.1),
+            color: statusColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
@@ -253,34 +253,6 @@ class _StudentCourseDetailsViewState extends State<StudentCourseDetailsView> {
               fontWeight: FontWeight.bold,
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCourseTasksTab(Course course) {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.assignment_turned_in_outlined,
-              size: 48,
-              color: Colors.grey[400],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Actividades de ${course.name}',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'Filtrando tareas exclusivas de este ID académico...',
-              style: TextStyle(color: Colors.grey, fontSize: 13),
-            ),
-          ],
         ),
       ),
     );

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:go_router/go_router.dart';
 
 import '../../services/api_service.dart';
 
@@ -343,7 +342,7 @@ class _AdminCoursesCrudViewState extends State<AdminCoursesCrudView> {
 
               // Selector de Periodo Académico dinámico
               DropdownButtonFormField<String>(
-                value: _selectedPeriodId,
+                initialValue: _selectedPeriodId,
                 decoration: const InputDecoration(
                   labelText: 'Asignar Periodo Académico *',
                   border: OutlineInputBorder(),
@@ -446,7 +445,7 @@ class _AdminCoursesCrudViewState extends State<AdminCoursesCrudView> {
                   )
                 : ListView.separated(
                     itemCount: _coursesList.length,
-                    separatorBuilder: (_, __) =>
+                    separatorBuilder: (_, _) =>
                         Divider(height: 1, color: Colors.grey.shade100),
                     itemBuilder: (context, index) {
                       final course = _coursesList[index];

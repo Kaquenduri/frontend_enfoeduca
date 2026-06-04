@@ -222,7 +222,7 @@ class _DynamicCrudScreenState extends State<DynamicCrudScreen> {
                         }
 
                         return DropdownButtonFormField<String>(
-                          value: selectedParentId,
+                          initialValue: selectedParentId,
                           decoration: const InputDecoration(
                             labelText: 'Seleccionar Padre',
                           ),
@@ -366,7 +366,7 @@ class _DynamicCrudScreenState extends State<DynamicCrudScreen> {
                       if (!parentExists) selectedParentId = null;
 
                       return DropdownButtonFormField<String>(
-                        value: selectedParentId,
+                        initialValue: selectedParentId,
                         decoration: const InputDecoration(
                           labelText: 'Modificar Padre',
                         ),
@@ -399,7 +399,7 @@ class _DynamicCrudScreenState extends State<DynamicCrudScreen> {
                       if (!sectionExists) selectedSectionId = null;
 
                       return DropdownButtonFormField<String>(
-                        value: selectedSectionId,
+                        initialValue: selectedSectionId,
                         decoration: const InputDecoration(
                           labelText: 'Modificar Sección',
                         ),

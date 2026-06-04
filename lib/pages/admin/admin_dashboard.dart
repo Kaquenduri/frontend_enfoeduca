@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:go_router/go_router.dart';
-
 import '../../services/api_service.dart';
 
 class AdminDashboardView extends StatefulWidget {
@@ -14,7 +12,6 @@ class AdminDashboardView extends StatefulWidget {
 
 class _AdminDashboardViewState extends State<AdminDashboardView> {
   late Future<Map<String, dynamic>> _adminDataFuture;
-  int _selectedIndex = 0; // Controla la opción activa en el menú lateral
 
   @override
   void initState() {
@@ -26,42 +23,6 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
     setState(() {
       _adminDataFuture = _fetchAllAdminData();
     });
-  }
-
-  Future<void> _handleLogout() async {
-    final bool? confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text(
-          'Cerrar Sesión',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        content: const Text(
-          '¿Está seguro de que desea salir del Panel de Administración?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.shade600,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Salir'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true) {
-      await ApiService.logout();
-      if (mounted) {
-        context.go('/login');
-      }
-    }
   }
 
   Future<Map<String, dynamic>> _fetchAllAdminData() async {
@@ -336,7 +297,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
                   )
                 : ListView.separated(
                     itemCount: courses.length,
-                    separatorBuilder: (_, __) =>
+                    separatorBuilder: (_, _) =>
                         Divider(height: 1, color: Colors.grey.shade100),
                     itemBuilder: (context, index) {
                       final course = courses[index];
@@ -407,7 +368,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
                   )
                 : ListView.separated(
                     itemCount: periods.length,
-                    separatorBuilder: (_, __) =>
+                    separatorBuilder: (_, _) =>
                         Divider(height: 1, color: Colors.grey.shade100),
                     itemBuilder: (context, index) {
                       final period = periods[index];

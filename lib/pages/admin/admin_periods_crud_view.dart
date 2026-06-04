@@ -510,7 +510,7 @@ class _AdminPeriodsCrudViewState extends State<AdminPeriodsCrudView> {
                   )
                 : ListView.separated(
                     itemCount: _periodsList.length,
-                    separatorBuilder: (_, __) =>
+                    separatorBuilder: (_, _) =>
                         Divider(height: 1, color: Colors.grey.shade100),
                     itemBuilder: (context, index) {
                       final period = _periodsList[index];

@@ -1,3 +1,4 @@
+// ignore_for_file: file_names
 class Session {
   final String sessionId;
   final String courseId;

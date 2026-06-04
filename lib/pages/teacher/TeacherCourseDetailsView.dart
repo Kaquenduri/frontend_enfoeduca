@@ -1,3 +1,4 @@
+// ignore_for_file: file_names
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -462,12 +463,12 @@ class _TeacherCourseDetailsViewState extends State<TeacherCourseDetailsView> {
           ),
           const SizedBox(height: 16),
           Expanded(
-            child: course.sessions == null || course.sessions!.isEmpty
+            child: course.sessions.isEmpty
                 ? const Center(child: Text('No hay sesiones registradas'))
                 : ListView.builder(
-                    itemCount: course.sessions!.length,
+                    itemCount: course.sessions.length,
                     itemBuilder: (context, index) {
-                      final session = course.sessions![index];
+                      final session = course.sessions[index];
                       return InkWell(
                         onTap: () {
                           // Navegación pasando todos los IDs requeridos de manera correlativa

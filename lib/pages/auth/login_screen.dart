@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 import 'dart:convert';
 import 'dart:async'; // Para manejar el StreamSubscription del Listener de Google
 import 'package:flutter/material.dart';
@@ -70,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
         googleIdToken = session.accessToken;
       }
 
-      if (googleIdToken == null || googleIdToken.isEmpty) {
+      if (googleIdToken.isEmpty) {
         // Opción de respaldo 1: Buscamos en las identidades guardadas del usuario
         try {
           googleIdToken =
@@ -87,11 +88,11 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       print(
-        "📢 [LMS LOG] Token obtenido de Google: ${googleIdToken != null ? 'SÍ TIENE TOKEN' : 'NULO'}",
+        "📢 [LMS LOG] Token obtenido de Google: ${'SÍ TIENE TOKEN'}",
       );
       print("📢 [LMS LOG] Usuario obtenido de Google: ${user?.email}");
 
-      if (user != null && googleIdToken != null && googleIdToken.isNotEmpty) {
+      if (user != null && googleIdToken.isNotEmpty) {
         print("🚀 [LMS LOG] Entrando al bloque de envío hacia el Backend...");
         setState(() {
           _isLoading = true;
@@ -250,16 +251,10 @@ class _LoginScreenState extends State<LoginScreen> {
         },
       );
 
-      final String? authUrl = res.url;
+      final String authUrl = res.url;
 
-      if (authUrl != null) {
-        // Ejecutamos la redirección forzando la misma pestaña del navegador activo
-        await launchUrl(Uri.parse(authUrl), mode: LaunchMode.inAppWebView);
-      } else {
-        throw Exception(
-          'No se pudo inicializar la pasarela de autenticación OAuth.',
-        );
-      }
+      // Ejecutamos la redirección forzando la misma pestaña del navegador activo
+      await launchUrl(Uri.parse(authUrl), mode: LaunchMode.inAppWebView);
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -286,7 +281,7 @@ class _LoginScreenState extends State<LoginScreen> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -308,7 +303,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.1),
+                      color: Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(

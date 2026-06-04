@@ -238,7 +238,7 @@ class StudentDashboard extends StatelessWidget {
                 )
               : null,
           color: isSelected
-              ? Colors.white.withOpacity(0.08)
+              ? Colors.white.withValues(alpha: 0.08)
               : Colors.transparent,
         ),
         child: Column(
@@ -387,7 +387,7 @@ class _StudentCoursesDashboard extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 6,
               spreadRadius: 1,
               offset: const Offset(0, 3),

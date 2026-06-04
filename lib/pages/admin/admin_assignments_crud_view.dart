@@ -326,7 +326,7 @@ class _AdminAssignmentsCrudViewState extends State<AdminAssignmentsCrudView> {
 
               // 1. Dropdown de Periodos Académicos
               DropdownButtonFormField<String>(
-                value: _selectedPeriodId,
+                initialValue: _selectedPeriodId,
                 decoration: const InputDecoration(
                   labelText: '1. Periodo Operativo *',
                   border: OutlineInputBorder(),
@@ -349,7 +349,7 @@ class _AdminAssignmentsCrudViewState extends State<AdminAssignmentsCrudView> {
 
               // 2. Dropdown de Secciones
               DropdownButtonFormField<String>(
-                value: _selectedSectionId,
+                initialValue: _selectedSectionId,
                 decoration: const InputDecoration(
                   labelText: '2. Aula / Sección Asignada *',
                   border: OutlineInputBorder(),
@@ -374,7 +374,7 @@ class _AdminAssignmentsCrudViewState extends State<AdminAssignmentsCrudView> {
 
               // 3. Dropdown de Cursos
               DropdownButtonFormField<String>(
-                value: _selectedCourseId,
+                initialValue: _selectedCourseId,
                 decoration: const InputDecoration(
                   labelText: '3. Materia o Curso *',
                   border: OutlineInputBorder(),
@@ -396,7 +396,7 @@ class _AdminAssignmentsCrudViewState extends State<AdminAssignmentsCrudView> {
 
               // 4. Dropdown de Docentes (Consumiendo del mapa cruzado)
               DropdownButtonFormField<String>(
-                value: _selectedTeacherId,
+                initialValue: _selectedTeacherId,
                 decoration: const InputDecoration(
                   labelText: '4. Profesor Responsable *',
                   border: OutlineInputBorder(),
@@ -471,7 +471,7 @@ class _AdminAssignmentsCrudViewState extends State<AdminAssignmentsCrudView> {
                   )
                 : ListView.separated(
                     itemCount: _assignmentsList.length,
-                    separatorBuilder: (_, __) =>
+                    separatorBuilder: (_, _) =>
                         Divider(height: 1, color: Colors.grey.shade100),
                     itemBuilder: (context, index) {
                       final item = _assignmentsList[index];

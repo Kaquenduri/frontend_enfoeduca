@@ -1,3 +1,4 @@
+// ignore_for_file: file_names
 import 'users.dart';
 
 class Teacher extends User {

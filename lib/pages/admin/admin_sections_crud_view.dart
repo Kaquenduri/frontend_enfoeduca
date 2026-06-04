@@ -332,7 +332,7 @@ class _AdminSectionsCrudViewState extends State<AdminSectionsCrudView> {
 
               // Selector de Grado Académico escolar
               DropdownButtonFormField<String>(
-                value: _selectedGrade,
+                initialValue: _selectedGrade,
                 decoration: const InputDecoration(
                   labelText: 'Grado Escolar *',
                   border: OutlineInputBorder(),
@@ -369,7 +369,7 @@ class _AdminSectionsCrudViewState extends State<AdminSectionsCrudView> {
 
               // Selector de Periodo dinámico leído de la API /period/
               DropdownButtonFormField<String>(
-                value: _selectedPeriodId,
+                initialValue: _selectedPeriodId,
                 decoration: const InputDecoration(
                   labelText: 'Asignar Periodo Académico *',
                   border: OutlineInputBorder(),
@@ -468,7 +468,7 @@ class _AdminSectionsCrudViewState extends State<AdminSectionsCrudView> {
                   )
                 : ListView.separated(
                     itemCount: _sectionsList.length,
-                    separatorBuilder: (_, __) =>
+                    separatorBuilder: (_, _) =>
                         Divider(height: 1, color: Colors.grey.shade100),
                     itemBuilder: (context, index) {
                       final section = _sectionsList[index];

@@ -1,3 +1,4 @@
+// ignore_for_file: file_names
 class MaterialModel {
   final String materialId;
   final String sessionId;

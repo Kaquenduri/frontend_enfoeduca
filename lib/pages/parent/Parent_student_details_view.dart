@@ -1,3 +1,4 @@
+// ignore_for_file: file_names
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -45,8 +46,9 @@ class _ParentStudentDetailsViewState extends State<ParentStudentDetailsView> {
         },
       );
 
-      if (response.statusCode != 200)
+      if (response.statusCode != 200) {
         throw Exception('Error en asistencias (${response.statusCode})');
+      }
 
       final List<dynamic> allAttendances = json.decode(response.body);
       // Filtrar únicamente los registros vinculados a este estudiante
@@ -72,8 +74,9 @@ class _ParentStudentDetailsViewState extends State<ParentStudentDetailsView> {
         },
       );
 
-      if (response.statusCode != 200)
+      if (response.statusCode != 200) {
         throw Exception('Error en calificaciones (${response.statusCode})');
+      }
 
       final List<dynamic> allSubmissions = json.decode(response.body);
       // Filtrar únicamente las tareas que correspondan a este estudiante
@@ -156,7 +159,7 @@ class _ParentStudentDetailsViewState extends State<ParentStudentDetailsView> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -190,7 +193,7 @@ class _ParentStudentDetailsViewState extends State<ParentStudentDetailsView> {
                 ? _buildEmptyState('No se registran asistencias tomadas.')
                 : ListView.separated(
                     itemCount: attendances.length,
-                    separatorBuilder: (_, __) =>
+                    separatorBuilder: (_, _) =>
                         const Divider(height: 1, color: Color(0xFFF1F3F5)),
                     itemBuilder: (context, index) {
                       final att = attendances[index];
@@ -241,7 +244,7 @@ class _ParentStudentDetailsViewState extends State<ParentStudentDetailsView> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -277,7 +280,7 @@ class _ParentStudentDetailsViewState extends State<ParentStudentDetailsView> {
                   )
                 : ListView.separated(
                     itemCount: submissions.length,
-                    separatorBuilder: (_, __) =>
+                    separatorBuilder: (_, _) =>
                         const Divider(height: 1, color: Color(0xFFF1F3F5)),
                     itemBuilder: (context, index) {
                       final sub = submissions[index];

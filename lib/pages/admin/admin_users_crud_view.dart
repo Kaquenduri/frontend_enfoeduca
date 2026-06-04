@@ -251,20 +251,16 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
         },
       );
 
-      final String? authUrl = res.url;
+      final String authUrl = res.url;
 
-      if (authUrl != null) {
-        final Uri urlToLaunch = Uri.parse(authUrl);
+      final Uri urlToLaunch = Uri.parse(authUrl);
 
-        // Lanzamos la URL en la misma pestaña activa del navegador actual
-        await launchUrl(
-          urlToLaunch,
-          mode: LaunchMode
-              .inAppWebView, // <--- Esto evita los popups congelados y usa la misma pestaña
-        );
-      } else {
-        throw Exception('No se pudo generar la URL de autenticación');
-      }
+      // Lanzamos la URL en la misma pestaña activa del navegador actual
+      await launchUrl(
+        urlToLaunch,
+        mode: LaunchMode
+            .inAppWebView, // <--- Esto evita los popups congelados y usa la misma pestaña
+      );
     } catch (e) {
       setState(() {
         _isAuthViaGoogle = false;
@@ -562,7 +558,7 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
               ],
 
               DropdownButtonFormField<String>(
-                value: _selectedRole,
+                initialValue: _selectedRole,
                 decoration: const InputDecoration(
                   labelText: 'Seleccione el Perfil / Rol institucional *',
                   border: OutlineInputBorder(),
@@ -710,7 +706,7 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
 
               if (_selectedRole == 'STUDENT') ...[
                 DropdownButtonFormField<String>(
-                  value: _selectedParentId,
+                  initialValue: _selectedParentId,
                   decoration: const InputDecoration(
                     labelText: 'Vincular Apoderado / Padre *',
                     border: OutlineInputBorder(),
@@ -735,7 +731,7 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
                 const SizedBox(height: 14),
 
                 DropdownButtonFormField<String>(
-                  value: _selectedSectionId,
+                  initialValue: _selectedSectionId,
                   decoration: const InputDecoration(
                     labelText: 'Asignar Sección del Alumno *',
                     border: OutlineInputBorder(),
@@ -815,7 +811,7 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
                   )
                 : ListView.separated(
                     itemCount: _allUsersCombinedList.length,
-                    separatorBuilder: (_, __) =>
+                    separatorBuilder: (_, _) =>
                         Divider(height: 1, color: Colors.grey.shade100),
                     itemBuilder: (context, index) {
                       final user = _allUsersCombinedList[index];

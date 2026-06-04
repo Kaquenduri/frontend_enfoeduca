@@ -1,5 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, file_names
 import 'dart:convert';
-import 'package:flutter/foundation.dart'; // Requerido para kIsWeb si es necesario
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:go_router/go_router.dart';
@@ -550,8 +550,8 @@ class _StudentTaskDetailViewState extends State<StudentTaskDetailView> {
                 ),
                 decoration: BoxDecoration(
                   color: isGraded
-                      ? Colors.green.withOpacity(0.1)
-                      : Colors.amber.withOpacity(0.1),
+                      ? Colors.green.withValues(alpha: 0.1)
+                      : Colors.amber.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(

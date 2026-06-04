@@ -1,3 +1,4 @@
+// ignore_for_file: file_names
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -202,7 +203,7 @@ class _TeacherTaskSubmissionsViewState
                               ),
                               child: ListTile(
                                 leading: CircleAvatar(
-                                  backgroundColor: stateColor.withOpacity(0.1),
+                                  backgroundColor: stateColor.withValues(alpha: 0.1),
                                   child: Icon(Icons.person, color: stateColor),
                                 ),
                                 title: Text(

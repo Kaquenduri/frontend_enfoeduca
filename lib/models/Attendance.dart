@@ -1,3 +1,4 @@
+// ignore_for_file: file_names
 import 'Session.dart';
 import 'AcademicPeriod.dart';
 
