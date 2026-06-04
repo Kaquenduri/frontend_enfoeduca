@@ -167,6 +167,7 @@ class _AdminAssignmentsCrudViewState extends State<AdminAssignmentsCrudView> {
     String sectionId,
     String courseId,
     String periodId,
+    String teacherId,
   ) async {
     final bool? confirm = await showDialog<bool>(
       context: context,
@@ -204,7 +205,7 @@ class _AdminAssignmentsCrudViewState extends State<AdminAssignmentsCrudView> {
       // Asumiendo eliminación mediante paso de identificadores o query params comunes en microservicios
       final response = await http.delete(
         Uri.parse(
-          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/assignments/$sectionId/$courseId/$periodId',
+          'https://academic-service-enfoenfoeduca-451053308845.us-central1.run.app/assignments/$sectionId/$courseId/$periodId/$teacherId',
         ),
         headers: {
           'Authorization': 'Bearer $token',
@@ -549,6 +550,7 @@ class _AdminAssignmentsCrudViewState extends State<AdminAssignmentsCrudView> {
                                 item['id_section'] ?? '',
                                 item['course_id'] ?? '',
                                 item['period_id'] ?? '',
+                                item['teacher_id'] ?? '',
                               ),
                               tooltip: 'Deshacer Vínculo',
                             ),

@@ -187,7 +187,7 @@ final appRouter = GoRouter(
                   ),
                 );
               },
-              // !!! AQUÍ AGREGAMOS LA NUEVA RUTA HIJA DE LA SESIÓN !!!
+              // !!! RUTAS HIJAS DE SESSION !!!
               routes: [
                 GoRoute(
                   path:
