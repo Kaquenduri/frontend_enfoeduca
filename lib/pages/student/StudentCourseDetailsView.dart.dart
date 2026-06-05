@@ -75,38 +75,46 @@ class _StudentCourseDetailsViewState extends State<StudentCourseDetailsView> {
         return DefaultTabController(
           length: 3,
           child: Scaffold(
-            backgroundColor: const Color(0xFFF8F9FA),
+            backgroundColor: const Color(0xFFF8FAFC),
             appBar: AppBar(
+              flexibleSpace: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF6727E8), Color(0xFF5153E8)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
+              foregroundColor: Colors.white,
+              elevation: 10,
+              shadowColor: const Color(0xFF6727E8).withValues(alpha: 0.4),
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    course.name, // Nombre real del curso de la API
+                    course.name,
                     style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                       fontSize: 18,
+                      letterSpacing: -0.5,
+                      color: Colors.white,
                     ),
                   ),
                   Text(
-                    'Periodo: ${course.academicPeriod.name}', // Periodo real de la API
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    'Periodo: ${course.academicPeriod.name}',
+                    style: const TextStyle(fontSize: 12, color: Colors.white70),
                   ),
                 ],
               ),
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black87,
-              elevation: 0.5,
               bottom: const TabBar(
-                labelColor: Colors.blueAccent,
-                unselectedLabelColor: Colors.black54,
-                indicatorColor: Colors.blueAccent,
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white70,
+                indicatorColor: Colors.white,
+                indicatorWeight: 3,
                 tabs: [
-                  Tab(
-                    icon: Icon(Icons.class_outlined),
-                    text: 'Sesiones y Temas',
-                  ),
-
-                  Tab(icon: Icon(Icons.info_outline), text: 'Información'),
+                  Tab(icon: Icon(Icons.class_rounded), text: 'Sesiones'),
+                  Tab(icon: Icon(Icons.info_rounded), text: 'Información'),
                 ],
               ),
             ),
@@ -195,57 +203,68 @@ class _StudentCourseDetailsViewState extends State<StudentCourseDetailsView> {
     required Color statusColor,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 14),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 6,
-            spreadRadius: 1,
-            offset: const Offset(0, 2),
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 12,
+        ),
         leading: Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: statusColor.withValues(alpha: 0.1),
-            shape: BoxShape.circle,
+            gradient: const LinearGradient(
+              colors: [Color(0xFF6727E8), Color(0xFF5153E8)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(Icons.menu_book_rounded, color: statusColor, size: 22),
+          child: const Icon(
+            Icons.menu_book_rounded,
+            color: Colors.white,
+            size: 24,
+          ),
         ),
         title: Text(
           title,
           style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            fontSize: 16,
             color: Colors.black87,
           ),
         ),
         subtitle: Padding(
-          padding: const EdgeInsets.only(top: 4.0),
+          padding: const EdgeInsets.only(top: 6.0),
           child: Text(
             subtitle,
-            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey[600],
+              height: 1.3,
+            ),
           ),
         ),
         trailing: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: statusColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
+            color: const Color(0xFF6727E8).withValues(alpha: 0.1),
+            shape: BoxShape.circle,
           ),
-          child: Text(
-            status,
-            style: TextStyle(
-              color: statusColor,
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
-            ),
+          child: const Icon(
+            Icons.arrow_forward_ios_rounded,
+            color: Color(0xFF6727E8),
+            size: 16,
           ),
         ),
       ),
@@ -266,34 +285,47 @@ class _StudentCourseDetailsViewState extends State<StudentCourseDetailsView> {
       padding: const EdgeInsets.all(24.0),
       child: ListView(
         children: [
-          Card(
-            color: Colors.white,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: Colors.grey.shade200),
+          Container(
+            padding: const EdgeInsets.all(24.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 15,
+                  offset: const Offset(0, 5),
+                ),
+              ],
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Metadatos del Curso',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const Divider(height: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.info_rounded, color: Color(0xFF6727E8)),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Metadatos del Curso',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF6727E8),
+                      ),
+                    ),
+                  ],
+                ),
+                const Divider(height: 32),
 
-                  _buildInfoRow('Descripción:', course.description),
-                  const SizedBox(height: 12),
-                  _buildInfoRow('ID del Periodo:', course.academicPeriod.name),
-                  const SizedBox(height: 12),
-                  _buildInfoRow(
-                    'Vigencia del Ciclo:',
-                    'Desde ${_formatDate(course.academicPeriod.startDate)} hasta ${_formatDate(course.academicPeriod.endDate)}',
-                  ),
-                ],
-              ),
+                _buildInfoRow('Descripción:', course.description),
+                const SizedBox(height: 16),
+                _buildInfoRow('ID del Periodo:', course.academicPeriod.name),
+                const SizedBox(height: 16),
+                _buildInfoRow(
+                  'Vigencia del Ciclo:',
+                  'Desde ${_formatDate(course.academicPeriod.startDate)} hasta ${_formatDate(course.academicPeriod.endDate)}',
+                ),
+              ],
             ),
           ),
         ],

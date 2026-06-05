@@ -37,7 +37,10 @@ class TeacherDashboard extends StatelessWidget {
       }
 
       // 3. Petición HTTP al endpoint global de asignaciones
-      final response = await ApiClient.get(ServiceType.academic, '/assignments/');
+      final response = await ApiClient.get(
+        ServiceType.academic,
+        '/assignments/',
+      );
 
       if (response.statusCode != 200) {
         throw Exception('Error al cargar asignaciones: ${response.statusCode}');
@@ -70,36 +73,53 @@ class TeacherDashboard extends StatelessWidget {
       body: Row(
         children: [
           // ===================================
-          // MENÚ LATERAL IZQUIERDO (PROFESOR)
+          // MENÚ LATERAL IZQUIERDO PREMIUM (PROFESOR)
           // ===================================
           Container(
             width: 100,
-            color: const Color(
-              0xFF151B26,
-            ), // Tono sutilmente distinto para diferenciar roles
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF1E3A8A), Color(0xFF3B82F6)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
             child: Column(
               children: [
-                const SizedBox(height: 24),
-                const CircleAvatar(
-                  radius: 24,
-                  backgroundColor: Colors.blueAccent,
-                  child: Icon(
-                    Icons.co_present_rounded,
-                    color: Colors.white,
-                    size: 26,
+                const SizedBox(height: 32),
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const CircleAvatar(
+                    radius: 26,
+                    backgroundColor: Colors.transparent,
+                    child: Icon(
+                      Icons.co_present_rounded,
+                      color: Colors.white,
+                      size: 32,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),
                 const Text(
                   'Docente',
                   style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 11,
+                    color: Colors.white,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
                   ),
                 ),
-                const SizedBox(height: 16),
-                const Divider(color: Colors.white12, height: 1),
+                const SizedBox(height: 24),
+                const Divider(
+                  color: Colors.white24,
+                  height: 1,
+                  indent: 16,
+                  endIndent: 16,
+                ),
 
                 // Items del Menú del Profesor
                 Expanded(
@@ -110,28 +130,20 @@ class TeacherDashboard extends StatelessWidget {
                         context: context,
                         icon: Icons.dashboard_customize_outlined,
                         label: 'Cursos',
-                        targetPath: '/teacher/dashboard',
-                        currentPath: location,
-                      ),
-                      _buildMenuButton(
-                        context: context,
-                        icon: Icons.rate_review_outlined,
-                        label: 'Calificar',
-                        targetPath: '/teacher/grading',
-                        currentPath: location,
-                      ),
-                      _buildMenuButton(
-                        context: context,
-                        icon: Icons.analytics_outlined,
-                        label: 'Reportes',
-                        targetPath: '/teacher/reports',
+                        targetPath: '/teacher/',
                         currentPath: location,
                       ),
                     ],
                   ),
                 ),
 
-                const Divider(color: Colors.white12, height: 1),
+                const Divider(
+                  color: Colors.white24,
+                  height: 1,
+                  indent: 16,
+                  endIndent: 16,
+                ),
+                const SizedBox(height: 8),
                 _buildMenuButton(
                   context: context,
                   icon: Icons.logout,
@@ -140,7 +152,7 @@ class TeacherDashboard extends StatelessWidget {
                   currentPath: location,
                   onTap: () => _logout(context),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
               ],
             ),
           ),
@@ -177,12 +189,10 @@ class TeacherDashboard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
         decoration: BoxDecoration(
           border: isSelected
-              ? const Border(
-                  left: BorderSide(color: Colors.tealAccent, width: 4),
-                )
+              ? const Border(left: BorderSide(color: Colors.white, width: 4))
               : null,
           color: isSelected
-              ? Colors.white.withValues(alpha: 0.06)
+              ? Colors.white.withValues(alpha: 0.15)
               : Colors.transparent,
         ),
         child: Column(
@@ -190,15 +200,15 @@ class TeacherDashboard extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: isSelected ? Colors.tealAccent : Colors.white60,
-              size: 24,
+              color: isSelected ? Colors.white : Colors.white70,
+              size: 26,
             ),
             const SizedBox(height: 6),
             Text(
               label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.white60,
+                color: isSelected ? Colors.white : Colors.white70,
                 fontSize: 11,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
@@ -220,15 +230,28 @@ class _TeacherCoursesDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: const Text(
-          'Panel de Control Docente',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          'Panel Docente',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: 24,
+            color: Colors.white,
+            letterSpacing: -0.5,
+          ),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF1E3A8A), Color(0xFF3B82F6)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        elevation: 10,
+        shadowColor: const Color(0xFF1E3A8A).withValues(alpha: 0.4),
       ),
       body: FutureBuilder<List<TeacherAssignment>>(
         future: fetchAssignmentsFuture,
@@ -320,22 +343,22 @@ class _TeacherCoursesDashboard extends StatelessWidget {
     int index,
   ) {
     final List<Color> teacherColors = [
-      Colors.teal.shade600,
-      Colors.cyan.shade700,
-      Colors.blueGrey.shade600,
-      Colors.purple.shade600,
+      const Color(0xFF1E40AF),
+      const Color(0xFF0284C7),
+      const Color(0xFF4338CA),
+      const Color(0xFF0F766E),
     ];
     final Color topColor = teacherColors[index % teacherColors.length];
 
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.10),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -346,10 +369,14 @@ class _TeacherCoursesDashboard extends StatelessWidget {
           Container(
             height: 90,
             decoration: BoxDecoration(
-              color: topColor,
+              gradient: LinearGradient(
+                colors: [topColor, topColor.withValues(alpha: 0.8)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
               ),
             ),
             padding: const EdgeInsets.all(14),
@@ -439,7 +466,7 @@ class _TeacherCoursesDashboard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      ElevatedButton(
+                      ElevatedButton.icon(
                         onPressed: () {
                           final courseId = assignment.courseId;
                           final sectionId = assignment.idSection;
@@ -447,24 +474,28 @@ class _TeacherCoursesDashboard extends StatelessWidget {
                             '/teacher/course/$courseId/sectionId/$sectionId',
                           );
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: topColor,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 0,
-                          ),
-                          minimumSize: const Size(60, 30),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
-                          ),
+                        icon: Icon(
+                          Icons.class_rounded,
+                          size: 16,
+                          color: topColor,
                         ),
-                        child: const Text(
+                        label: Text(
                           'Ver Aula',
                           style: TextStyle(
-                            fontSize: 11,
                             fontWeight: FontWeight.bold,
+                            color: topColor,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: topColor.withValues(alpha: 0.1),
+                          foregroundColor: topColor,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                       ),

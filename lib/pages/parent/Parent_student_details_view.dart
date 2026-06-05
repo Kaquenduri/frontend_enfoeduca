@@ -34,7 +34,10 @@ class _ParentStudentDetailsViewState extends State<ParentStudentDetailsView> {
   // HTTP GET & FILTER: Asistencias
   Future<List<dynamic>> _fetchFilteredAttendances() async {
     try {
-      final response = await ApiClient.get(ServiceType.academic, '/attendances/');
+      final response = await ApiClient.get(
+        ServiceType.academic,
+        '/attendances/',
+      );
 
       if (response.statusCode != 200) {
         throw Exception('Error en asistencias (${response.statusCode})');
@@ -53,7 +56,10 @@ class _ParentStudentDetailsViewState extends State<ParentStudentDetailsView> {
   // HTTP GET & FILTER: Tareas / Notas (Submissions)
   Future<List<dynamic>> _fetchFilteredSubmissions() async {
     try {
-      final response = await ApiClient.get(ServiceType.academic, '/submissions/submission/');
+      final response = await ApiClient.get(
+        ServiceType.academic,
+        '/submissions/submission/',
+      );
 
       if (response.statusCode != 200) {
         throw Exception('Error en calificaciones (${response.statusCode})');
@@ -72,22 +78,40 @@ class _ParentStudentDetailsViewState extends State<ParentStudentDetailsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF0F766E), Color(0xFF06B6D4)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        foregroundColor: Colors.white,
+        elevation: 10,
+        shadowColor: const Color(0xFF0F766E).withValues(alpha: 0.4),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 18,
+            color: Colors.white,
+          ),
           onPressed: () => context.go('/parent'),
         ),
-        title: Text(
-          'Expediente Académico del Estudiante',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        title: const Text(
+          'Expediente Académico',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
+            color: Colors.white,
+            letterSpacing: -0.5,
+          ),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded),
+            icon: const Icon(Icons.refresh_rounded, color: Colors.white),
             onPressed: _refreshData,
           ),
           const SizedBox(width: 8),
@@ -137,33 +161,40 @@ class _ParentStudentDetailsViewState extends State<ParentStudentDetailsView> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
-                Icons.edit_calendar_outlined,
-                color: Colors.indigo.shade700,
-                size: 22,
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.teal.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.edit_calendar_rounded,
+                  color: Color(0xFF0F766E),
+                  size: 24,
+                ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
               const Text(
                 'Control de Asistencia',
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF0F766E),
                 ),
               ),
             ],
@@ -222,33 +253,40 @@ class _ParentStudentDetailsViewState extends State<ParentStudentDetailsView> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
-                Icons.assignment_turned_in_outlined,
-                color: Colors.amber.shade800,
-                size: 22,
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.assignment_turned_in_rounded,
+                  color: Colors.orange.shade800,
+                  size: 24,
+                ),
               ),
-              const SizedBox(width: 10),
-              const Text(
-                'Calificaciones obtenidas',
+              const SizedBox(width: 12),
+              Text(
+                'Calificaciones',
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.orange.shade800,
                 ),
               ),
             ],

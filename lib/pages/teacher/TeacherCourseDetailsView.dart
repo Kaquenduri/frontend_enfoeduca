@@ -57,7 +57,10 @@ class _TeacherCourseDetailsViewState extends State<TeacherCourseDetailsView> {
   }) async {
     try {
       // 1. Obtener todos los alumnos del microservicio de usuarios
-      final studentsResponse = await ApiClient.get(ServiceType.users, '/students/');
+      final studentsResponse = await ApiClient.get(
+        ServiceType.users,
+        '/students/',
+      );
 
       if (studentsResponse.statusCode != 200) {
         throw Exception('Error al obtener la lista global de alumnos.');
@@ -353,46 +356,62 @@ class _TeacherCourseDetailsViewState extends State<TeacherCourseDetailsView> {
         return DefaultTabController(
           length: 2,
           child: Scaffold(
-            backgroundColor: const Color(0xFFF8F9FA),
+            backgroundColor: const Color(0xFFF8FAFC),
             appBar: AppBar(
+              flexibleSpace: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF1E3A8A), Color(0xFF3B82F6)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
+              foregroundColor: Colors.white,
+              elevation: 10,
+              shadowColor: const Color(0xFF1E3A8A).withValues(alpha: 0.4),
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     course.name,
                     style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                       fontSize: 18,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
                     ),
                   ),
                   Text(
-                    'Panel Docente • Sección ID: ${widget.sectionId}', // Demuestra que ya tiene el ID inyectado
+                    'Panel Docente • Sección ID: ${widget.sectionId}',
                     style: const TextStyle(
                       fontSize: 12,
-                      color: Colors.teal,
+                      color: Colors.white70,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
               ),
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black87,
-              elevation: 0.5,
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 18,
+                  color: Colors.white,
+                ),
                 onPressed: () => context.go('/teacher'),
               ),
               bottom: const TabBar(
-                labelColor: Colors.teal,
-                unselectedLabelColor: Colors.black54,
-                indicatorColor: Colors.teal,
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white54,
+                indicatorColor: Colors.white,
+                indicatorWeight: 3,
                 tabs: [
                   Tab(
-                    icon: Icon(Icons.folder_shared_outlined),
+                    icon: Icon(Icons.folder_shared_rounded),
                     text: 'Planificación de Sesiones',
                   ),
                   Tab(
-                    icon: Icon(Icons.info_outline),
+                    icon: Icon(Icons.info_rounded),
                     text: 'Información del Aula',
                   ),
                 ],
@@ -426,14 +445,18 @@ class _TeacherCourseDetailsViewState extends State<TeacherCourseDetailsView> {
               ),
               ElevatedButton.icon(
                 onPressed: _showAddSessionDialog,
-                icon: const Icon(Icons.add, size: 16),
+                icon: const Icon(Icons.add_rounded, size: 16),
                 label: const Text(
                   'Agregar Sesión',
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
+                  backgroundColor: const Color(0xFF1E3A8A),
                   foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
             ],
@@ -457,7 +480,7 @@ class _TeacherCourseDetailsViewState extends State<TeacherCourseDetailsView> {
                           title: session.name,
                           subtitle: 'Vigencia programada',
                           status: 'Gestionar',
-                          statusColor: Colors.teal,
+                          statusColor: const Color(0xFF1E3A8A),
                         ),
                       );
                     },
@@ -478,16 +501,49 @@ class _TeacherCourseDetailsViewState extends State<TeacherCourseDetailsView> {
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: statusColor.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(Icons.play_lesson_rounded, color: statusColor, size: 24),
+        ),
         title: Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          style: const TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: 14,
+            color: Colors.black87,
+          ),
         ),
-        subtitle: Text(subtitle, style: const TextStyle(fontSize: 11)),
-        trailing: const Icon(Icons.arrow_forward, size: 14, color: Colors.teal),
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+        ),
+        trailing: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.arrow_forward_ios_rounded,
+            size: 14,
+            color: Colors.black54,
+          ),
+        ),
       ),
     );
   }

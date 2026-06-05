@@ -54,7 +54,10 @@ class _TeacherSessionMaterialsViewState
   Future<Map<String, dynamic>> _fetchSessionDetailsAndNames(
     String sessionId,
   ) async {
-    final response = await ApiClient.get(ServiceType.academic, '/courses/sessions/$sessionId');
+    final response = await ApiClient.get(
+      ServiceType.academic,
+      '/courses/sessions/$sessionId',
+    );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body) as Map<String, dynamic>;
@@ -76,7 +79,10 @@ class _TeacherSessionMaterialsViewState
           try {
             await Future.wait(
               missingIds.map((studentId) async {
-                final studentRes = await ApiClient.get(ServiceType.users, '/students/$studentId');
+                final studentRes = await ApiClient.get(
+                  ServiceType.users,
+                  '/students/$studentId',
+                );
 
                 if (studentRes.statusCode == 200) {
                   final studentData =
@@ -125,7 +131,7 @@ class _TeacherSessionMaterialsViewState
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           title: const Text(
-            'Subir Material al Bucket',
+            'Subir Material',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
           content: SingleChildScrollView(
@@ -219,11 +225,14 @@ class _TeacherSessionMaterialsViewState
 
                 if (isUploadingFile) ...[
                   const SizedBox(height: 16),
-                  const LinearProgressIndicator(color: Colors.teal),
+                  const LinearProgressIndicator(color: const Color(0xFF1E3A8A)),
                   const SizedBox(height: 4),
                   const Text(
                     'Procesando y subiendo a Supabase Storage...',
-                    style: TextStyle(fontSize: 11, color: Colors.teal),
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: const Color(0xFF1E3A8A),
+                    ),
                   ),
                 ],
               ],
@@ -236,7 +245,7 @@ class _TeacherSessionMaterialsViewState
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal,
+                backgroundColor: const Color(0xFF1E3A8A),
                 foregroundColor: Colors.white,
               ),
               onPressed:
@@ -306,7 +315,7 @@ class _TeacherSessionMaterialsViewState
                                 content: Text(
                                   '¡Material creado y guardado en el bucket con éxito!',
                                 ),
-                                backgroundColor: Colors.teal,
+                                backgroundColor: const Color(0xFF1E3A8A),
                               ),
                             );
                           }
@@ -370,7 +379,10 @@ class _TeacherSessionMaterialsViewState
                 ),
                 const SizedBox(height: 16),
                 ListTile(
-                  leading: const Icon(Icons.calendar_today, color: Colors.teal),
+                  leading: const Icon(
+                    Icons.calendar_today,
+                    color: const Color(0xFF1E3A8A),
+                  ),
                   title: const Text(
                     'Fecha de Inicio',
                     style: TextStyle(fontSize: 12),
@@ -420,7 +432,7 @@ class _TeacherSessionMaterialsViewState
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal,
+                backgroundColor: const Color(0xFF1E3A8A),
                 foregroundColor: Colors.white,
               ),
               onPressed: () async {
@@ -464,7 +476,7 @@ class _TeacherSessionMaterialsViewState
                       messenger.showSnackBar(
                         const SnackBar(
                           content: Text('¡Tarea asignada con éxito!'),
-                          backgroundColor: Colors.teal,
+                          backgroundColor: const Color(0xFF1E3A8A),
                         ),
                       );
                     }
@@ -524,7 +536,7 @@ class _TeacherSessionMaterialsViewState
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('¡Todas las asistencias actualizadas con éxito!'),
-            backgroundColor: Colors.teal,
+            backgroundColor: const Color(0xFF1E3A8A),
           ),
         );
       }
@@ -552,7 +564,9 @@ class _TeacherSessionMaterialsViewState
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator(color: Colors.teal)),
+            body: Center(
+              child: CircularProgressIndicator(color: const Color(0xFF1E3A8A)),
+            ),
           );
         } else if (snapshot.hasError) {
           return Scaffold(
@@ -578,13 +592,26 @@ class _TeacherSessionMaterialsViewState
         return DefaultTabController(
           length: 3,
           child: Scaffold(
-            backgroundColor: const Color(0xFFF8F9FA),
+            backgroundColor: const Color(0xFFF8FAFC),
             appBar: AppBar(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black87,
-              elevation: 0.5,
+              flexibleSpace: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF1E3A8A), Color(0xFF3B82F6)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
+              foregroundColor: Colors.white,
+              elevation: 10,
+              shadowColor: const Color(0xFF1E3A8A).withValues(alpha: 0.4),
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 18,
+                  color: Colors.white,
+                ),
                 onPressed: () => context.go(
                   '/teacher/course/${widget.courseId}/sectionId/${widget.sectionId}',
                 ),
@@ -595,35 +622,38 @@ class _TeacherSessionMaterialsViewState
                   Text(
                     sessionName,
                     style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                       fontSize: 16,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
                     ),
                   ),
                   Text(
                     'Sección ID: ${widget.sectionId} • ($presentsCount/${_localAttendances.length} Presentes)',
                     style: const TextStyle(
                       fontSize: 12,
-                      color: Colors.teal,
+                      color: Colors.white70,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
               ),
               bottom: const TabBar(
-                labelColor: Colors.teal,
-                unselectedLabelColor: Colors.black54,
-                indicatorColor: Colors.teal,
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white54,
+                indicatorColor: Colors.white,
+                indicatorWeight: 3,
                 tabs: [
                   Tab(
-                    icon: Icon(Icons.folder_copy_outlined),
+                    icon: Icon(Icons.folder_copy_rounded),
                     text: 'Materiales',
                   ),
                   Tab(
-                    icon: Icon(Icons.assignment_turned_in_outlined),
+                    icon: Icon(Icons.assignment_turned_in_rounded),
                     text: 'Tareas',
                   ),
                   Tab(
-                    icon: Icon(Icons.people_outline_rounded),
+                    icon: Icon(Icons.people_alt_rounded),
                     text: 'Asistencias',
                   ),
                 ],
@@ -660,15 +690,19 @@ class _TeacherSessionMaterialsViewState
                 ),
               ),
               ElevatedButton.icon(
-                onPressed: _showAddMaterialDialog, // <-- CONECTADO
-                icon: const Icon(Icons.cloud_upload_outlined, size: 16),
+                onPressed: _showAddMaterialDialog,
+                icon: const Icon(Icons.cloud_upload_rounded, size: 16),
                 label: const Text(
                   'Subir Material',
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
+                  backgroundColor: const Color(0xFF1E3A8A),
                   foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
             ],
@@ -684,23 +718,52 @@ class _TeacherSessionMaterialsViewState
                     itemCount: materials.length,
                     itemBuilder: (context, index) {
                       final material = materials[index];
-                      return Card(
+                      return Container(
                         margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
                         child: ListTile(
-                          leading: const Icon(
-                            Icons.insert_drive_file_outlined,
-                            color: Colors.teal,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          leading: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFF1E3A8A,
+                              ).withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.insert_drive_file_rounded,
+                              color: Color(0xFF1E3A8A),
+                              size: 24,
+                            ),
                           ),
                           title: Text(
                             material['title'] ?? 'Sin título',
                             style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.black87,
                             ),
                           ),
                           subtitle: Text(
                             material['description'] ?? '',
-                            style: const TextStyle(fontSize: 11),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
                           ),
                         ),
                       );
@@ -730,15 +793,19 @@ class _TeacherSessionMaterialsViewState
                 ),
               ),
               ElevatedButton.icon(
-                onPressed: _showAddTaskDialog, // <-- CONECTADO
-                icon: const Icon(Icons.add_task_outlined, size: 16),
+                onPressed: _showAddTaskDialog,
+                icon: const Icon(Icons.add_task_rounded, size: 16),
                 label: const Text(
                   'Nueva Tarea',
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
+                  backgroundColor: const Color(0xFF1E3A8A),
                   foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
             ],
@@ -755,28 +822,58 @@ class _TeacherSessionMaterialsViewState
                     itemBuilder: (context, index) {
                       final task = tasks[index];
                       final taskId = task['task_id'] ?? '';
-                      return Card(
+                      return Container(
                         margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
                         child: ListTile(
-                          leading: const Icon(
-                            Icons.assignment,
-                            color: Colors.orangeAccent,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          leading: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.orange.withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.assignment_rounded,
+                              color: Colors.orange.shade800,
+                              size: 24,
+                            ),
                           ),
                           title: Text(
                             task['title'] ?? '',
                             style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.black87,
                             ),
                           ),
-                          trailing: const Icon(
-                            Icons.chevron_right,
-                            size: 16,
-                            color: Colors.teal,
+                          trailing: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.chevron_right_rounded,
+                              size: 16,
+                              color: Colors.black54,
+                            ),
                           ),
                           onTap: () {
                             if (taskId.isNotEmpty) {
-                              // Navegamos hacia la nueva vista de entregas de esta tarea
                               context.go(
                                 '/teacher/course/${widget.courseId}/sectionId/${widget.sectionId}/session/${widget.sessionId}/task/$taskId',
                               );
@@ -838,7 +935,7 @@ class _TeacherSessionMaterialsViewState
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
+                  backgroundColor: const Color(0xFF1E3A8A),
                   foregroundColor: Colors.white,
                 ),
               ),
@@ -849,7 +946,7 @@ class _TeacherSessionMaterialsViewState
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
               child: LinearProgressIndicator(
-                color: Colors.teal,
+                color: const Color(0xFF1E3A8A),
                 backgroundColor: Color(0xFFE0F2F1),
               ),
             ),

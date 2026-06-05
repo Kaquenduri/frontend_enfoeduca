@@ -129,27 +129,38 @@ class _DirectorDashboardViewState extends State<DirectorDashboardView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F6F9),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text(
-          'Panel de Control Institucional',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF0F172A), Color(0xFF334155)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        elevation: 0,
+        title: const Text(
+          'Panel Institucional',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: 22,
+            color: Colors.white,
+            letterSpacing: -0.5,
+          ),
+        ),
+        foregroundColor: Colors.white,
+        elevation: 10,
+        shadowColor: const Color(0xFF0F172A).withValues(alpha: 0.4),
         actions: [
           IconButton(
-            icon: const Icon(Icons.sync_rounded, color: Colors.blueAccent),
+            icon: const Icon(Icons.sync_rounded, color: Colors.white),
             tooltip: 'Sincronizar Datos',
             onPressed: _refreshDashboard,
           ),
           const SizedBox(width: 8),
-          // ==========================================
-          // BOTÓN DE CERRAR SESIÓN ESTILIZADO
-          // ==========================================
           IconButton(
-            icon: Icon(Icons.logout_rounded, color: Colors.red.shade600),
+            icon: Icon(Icons.logout_rounded, color: Colors.redAccent.shade100),
             tooltip: 'Cerrar Sesión',
             onPressed: _handleLogout,
           ),
@@ -187,34 +198,108 @@ class _DirectorDashboardViewState extends State<DirectorDashboardView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // ============================
+                // CABECERA DE BIENVENIDA PREMIUM
+                // ============================
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  margin: const EdgeInsets.only(bottom: 24),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF0F172A), Color(0xFF1E3A5F)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF0F172A).withValues(alpha: 0.3),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.12),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.account_balance_rounded,
+                          color: Colors.white,
+                          size: 36,
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'EnfoEduca',
+                            style: TextStyle(
+                              color: Colors.white38,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            'Panel Institucional',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Vista general del estado de la institución',
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.6),
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                // KPIs
                 Row(
                   children: [
                     _buildKpiCard(
                       'Estudiantes',
                       data['total_students'].toString(),
                       Icons.school_rounded,
-                      Colors.blue,
+                      const Color(0xFF2563EB),
                     ),
                     const SizedBox(width: 16),
                     _buildKpiCard(
                       'Docentes',
                       data['total_teachers'].toString(),
                       Icons.assignment_ind_rounded,
-                      Colors.green,
+                      const Color(0xFF059669),
                     ),
                     const SizedBox(width: 16),
                     _buildKpiCard(
                       'Padres de Familia',
                       data['total_parents'].toString(),
                       Icons.people_alt_rounded,
-                      Colors.purple,
+                      const Color(0xFF7C3AED),
                     ),
                     const SizedBox(width: 16),
                     _buildKpiCard(
                       'Cursos Creados',
                       data['total_courses'].toString(),
                       Icons.auto_stories_rounded,
-                      Colors.orange,
+                      const Color(0xFFD97706),
                     ),
                   ],
                 ),
@@ -275,9 +360,9 @@ class _DirectorDashboardViewState extends State<DirectorDashboardView> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -290,18 +375,38 @@ class _DirectorDashboardViewState extends State<DirectorDashboardView> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Auditoría de Asistencias Diarias',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(
+                            0xFF0F172A,
+                          ).withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(
+                          Icons.fact_check_rounded,
+                          color: Color(0xFF0F172A),
+                          size: 18,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        'Auditoría de Asistencias',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.black87,
+                          letterSpacing: -0.3,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Text(
-                    'Fecha de inspección: $formattedHeaderDate',
-                    style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                    'Fecha: $formattedHeaderDate',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                   ),
                 ],
               ),
@@ -326,14 +431,15 @@ class _DirectorDashboardViewState extends State<DirectorDashboardView> {
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF151B26),
+                  backgroundColor: const Color(0xFF0F172A),
                   foregroundColor: Colors.white,
+                  elevation: 0,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 14,
                     vertical: 12,
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
               ),
@@ -566,24 +672,31 @@ class _DirectorDashboardViewState extends State<DirectorDashboardView> {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
             ),
           ],
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
+                gradient: LinearGradient(
+                  colors: [
+                    color.withValues(alpha: 0.15),
+                    color.withValues(alpha: 0.07),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: color, size: 26),
+              child: Icon(icon, color: color, size: 28),
             ),
             const SizedBox(width: 16),
             Column(
@@ -594,16 +707,18 @@ class _DirectorDashboardViewState extends State<DirectorDashboardView> {
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey.shade500,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.3,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   value,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                    color: color,
+                    letterSpacing: -0.5,
                   ),
                 ),
               ],
@@ -620,25 +735,43 @@ class _DirectorDashboardViewState extends State<DirectorDashboardView> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Alumnado por Sección',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0F172A).withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.domain_rounded,
+                  color: Color(0xFF0F172A),
+                  size: 18,
+                ),
+              ),
+              const SizedBox(width: 10),
+              const Text(
+                'Alumnado por Sección',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.black87,
+                  letterSpacing: -0.3,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
           Expanded(
@@ -651,40 +784,63 @@ class _DirectorDashboardViewState extends State<DirectorDashboardView> {
                   )
                 : ListView.separated(
                     itemCount: sections.length,
-                    separatorBuilder: (_, _) =>
+                    separatorBuilder: (_, __) =>
                         const Divider(height: 1, color: Color(0xFFF1F3F5)),
                     itemBuilder: (context, index) {
                       final item = sections[index];
+                      final List<Color> sectionColors = [
+                        const Color(0xFF2563EB),
+                        const Color(0xFF059669),
+                        const Color(0xFF7C3AED),
+                        const Color(0xFFD97706),
+                        const Color(0xFFDC2626),
+                        const Color(0xFF0891B2),
+                      ];
+                      final Color sectionColor =
+                          sectionColors[index % sectionColors.length];
                       return ListTile(
                         contentPadding: EdgeInsets.zero,
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.blueGrey.shade50,
-                          child: const Icon(
+                        leading: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: sectionColor.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
                             Icons.roofing_rounded,
                             size: 18,
-                            color: Colors.blueGrey,
+                            color: sectionColor,
                           ),
                         ),
                         title: Text(
                           item['name'],
                           style: const TextStyle(
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
                             fontSize: 13,
+                            color: Colors.black87,
                           ),
                         ),
                         trailing: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12,
-                            vertical: 4,
+                            vertical: 5,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.blue.shade50,
+                            gradient: LinearGradient(
+                              colors: [
+                                sectionColor.withValues(alpha: 0.1),
+                                sectionColor.withValues(alpha: 0.05),
+                              ],
+                            ),
                             borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: sectionColor.withValues(alpha: 0.2),
+                            ),
                           ),
                           child: Text(
-                            '${item['student_count']} Alumnos',
+                            '${item['student_count']} alumnos',
                             style: TextStyle(
-                              color: Colors.blue.shade800,
+                              color: sectionColor,
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
                             ),

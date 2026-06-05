@@ -43,6 +43,9 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
   // Suscripción para escuchar de manera reactiva el retorno de Google en entornos Web
   StreamSubscription<AuthState>? _authSubscription;
 
+  // Notifier para feedback de contraseña en tiempo real
+  final ValueNotifier<String> _passwordNotifier = ValueNotifier('');
+
   @override
   void initState() {
     super.initState();
@@ -52,8 +55,7 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
 
   @override
   void dispose() {
-    _authSubscription
-        ?.cancel(); // Cancelamos la escucha para evitar fugas de memoria
+    _authSubscription?.cancel();
     _nameController.dispose();
     _lastNameController.dispose();
     _emailController.dispose();
@@ -61,6 +63,7 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
     _specialityController.dispose();
     _phoneController.dispose();
     _occupationController.dispose();
+    _passwordNotifier.dispose();
     super.dispose();
   }
 
@@ -144,13 +147,18 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
 
   // Helper para hacer peticiones con reintentos automáticos si detectamos
   // que el backend nos devolvió el error de rate limit de Supabase embebido.
-  Future<dynamic> _fetchWithRetry(ServiceType service, String endpoint, {int maxRetries = 3}) async {
+  Future<dynamic> _fetchWithRetry(
+    ServiceType service,
+    String endpoint, {
+    int maxRetries = 3,
+  }) async {
     for (int i = 0; i < maxRetries; i++) {
       final response = await ApiClient.get(service, endpoint);
       if (response.statusCode == 200) {
         final bodyString = response.body;
         // Supabase error embedded inside the user_id relation:
-        if (!bodyString.contains('"error":"Too many requests') && !bodyString.contains('"error": "Too many requests')) {
+        if (!bodyString.contains('"error":"Too many requests') &&
+            !bodyString.contains('"error": "Too many requests')) {
           return response; // Respuesta exitosa y sin rate-limit
         }
       }
@@ -169,10 +177,19 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
     setState(() => _isLoading = true);
     try {
       // Usamos reintentos inteligentes para burlar el rate-limit intermitente
-      final studentsRes = await _fetchWithRetry(ServiceType.users, '/students/');
-      final teachersRes = await _fetchWithRetry(ServiceType.users, '/teachers/');
+      final studentsRes = await _fetchWithRetry(
+        ServiceType.users,
+        '/students/',
+      );
+      final teachersRes = await _fetchWithRetry(
+        ServiceType.users,
+        '/teachers/',
+      );
       final parentsRes = await _fetchWithRetry(ServiceType.users, '/parents/');
-      final sectionsRes = await ApiClient.get(ServiceType.academic, '/sections/');
+      final sectionsRes = await ApiClient.get(
+        ServiceType.academic,
+        '/sections/',
+      );
 
       final allResponses = [studentsRes, teachersRes, parentsRes, sectionsRes];
       if (allResponses.any((res) => res?.statusCode != 200)) {
@@ -263,8 +280,7 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
       // Lanzamos la URL en la misma pestaña activa del navegador actual
       await launchUrl(
         urlToLaunch,
-        mode: LaunchMode
-            .inAppWebView, // <--- Esto evita los popups congelados y usa la misma pestaña
+        webOnlyWindowName: '_self', // <--- FUERZA LA MISMA PESTAÑA PARA EL CRUD
       );
     } catch (e) {
       setState(() {
@@ -301,7 +317,11 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
 
     setState(() => _isLoading = true);
     try {
-      final response = await ApiClient.post(ServiceType.users, endpoint, body: basePayload);
+      final response = await ApiClient.post(
+        ServiceType.users,
+        endpoint,
+        body: basePayload,
+      );
       if (response.statusCode == 200 || response.statusCode == 201) {
         _showSnackBar(
           'Usuario registrado con éxito en el sistema.',
@@ -360,7 +380,10 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
 
     setState(() => _isLoading = true);
     try {
-      final response = await ApiClient.delete(ServiceType.users, '/$deletePath/$id');
+      final response = await ApiClient.delete(
+        ServiceType.users,
+        '/$deletePath/$id',
+      );
       if (response.statusCode == 200 || response.statusCode == 204) {
         _showSnackBar('Usuario eliminado satisfactoriamente.', Colors.orange);
         _fetchUsersAndDependencies();
@@ -586,9 +609,17 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
                       : Colors.transparent,
                   filled: _isAuthViaGoogle,
                 ),
-                validator: (val) => val == null || val.trim().isEmpty
-                    ? 'Ingrese los nombres'
-                    : null,
+                validator: (val) {
+                  if (val == null || val.trim().isEmpty) {
+                    return 'Ingrese los nombres';
+                  }
+                  if (!RegExp(
+                    r"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$",
+                  ).hasMatch(val.trim())) {
+                    return 'Los nombres solo pueden contener letras';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 14),
 
@@ -604,9 +635,17 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
                       : Colors.transparent,
                   filled: _isAuthViaGoogle,
                 ),
-                validator: (val) => val == null || val.trim().isEmpty
-                    ? 'Ingrese los apellidos'
-                    : null,
+                validator: (val) {
+                  if (val == null || val.trim().isEmpty) {
+                    return 'Ingrese los apellidos';
+                  }
+                  if (!RegExp(
+                    r"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$",
+                  ).hasMatch(val.trim())) {
+                    return 'Los apellidos solo pueden contener letras';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 14),
 
@@ -633,16 +672,60 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
+                  onChanged: (val) => _passwordNotifier.value = val,
                   decoration: const InputDecoration(
                     labelText: 'Contraseña de Acceso *',
                     border: OutlineInputBorder(),
                     isDense: true,
                   ),
-                  validator: (val) => val == null || val.length < 6
-                      ? 'Mínimo 6 caracteres requeridos'
-                      : null,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) {
+                      return 'La contraseña es obligatoria';
+                    }
+                    if (val.length < 8) return 'Mínimo 8 caracteres';
+                    if (!RegExp(r'[A-Z]').hasMatch(val))
+                      return 'Debe incluir al menos una mayúscula';
+                    if (!RegExp(r'[0-9]').hasMatch(val))
+                      return 'Debe incluir al menos un número';
+                    if (!RegExp(
+                      r'[!@#\$%^&*(),.?":{}|<>_\-+=/\\\[\]]',
+                    ).hasMatch(val)) {
+                      return 'Debe incluir al menos un carácter especial (!@#\$...)';
+                    }
+                    return null;
+                  },
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 8),
+                // FEEDBACK EN TIEMPO REAL DE REQUISITOS DE CONTRASEÑA
+                ValueListenableBuilder<String>(
+                  valueListenable: _passwordNotifier,
+                  builder: (context, pwd, _) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildPasswordRequirement(
+                          met: pwd.length >= 8,
+                          label: 'Mínimo 8 caracteres',
+                        ),
+                        _buildPasswordRequirement(
+                          met: RegExp(r'[A-Z]').hasMatch(pwd),
+                          label: 'Al menos una letra mayúscula',
+                        ),
+                        _buildPasswordRequirement(
+                          met: RegExp(r'[0-9]').hasMatch(pwd),
+                          label: 'Al menos un número',
+                        ),
+                        _buildPasswordRequirement(
+                          met: RegExp(
+                            r'[!@#\$%^&*(),.?":{}|<>_\-+=/\\\[\]]',
+                          ).hasMatch(pwd),
+                          label: 'Al menos un carácter especial',
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: 6),
               ],
 
               if (_selectedRole == 'TEACHER') ...[
@@ -761,6 +844,32 @@ class _AdminUsersCrudViewState extends State<AdminUsersCrudView> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildPasswordRequirement({required bool met, required String label}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Icon(
+            met
+                ? Icons.check_circle_rounded
+                : Icons.radio_button_unchecked_rounded,
+            size: 14,
+            color: met ? Colors.green.shade600 : Colors.grey.shade400,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: met ? Colors.green.shade700 : Colors.grey.shade500,
+              fontWeight: met ? FontWeight.w600 : FontWeight.normal,
+            ),
+          ),
+        ],
       ),
     );
   }

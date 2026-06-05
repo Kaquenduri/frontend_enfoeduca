@@ -37,7 +37,10 @@ class StudentDashboard extends StatelessWidget {
       }
 
       // 3. Consultar el perfil del estudiante usando el ID extraído del token
-      final studentResponse = await ApiClient.get(ServiceType.users, '/students/$studentId');
+      final studentResponse = await ApiClient.get(
+        ServiceType.users,
+        '/students/$studentId',
+      );
 
       if (studentResponse.statusCode != 200) {
         throw Exception(
@@ -56,7 +59,10 @@ class StudentDashboard extends StatelessWidget {
       final String targetSectionId = sectionInfo['id_section'];
 
       // 4. Consultar la lista completa de asignaciones académicas
-      final assignmentsResponse = await ApiClient.get(ServiceType.academic, '/assignments/');
+      final assignmentsResponse = await ApiClient.get(
+        ServiceType.academic,
+        '/assignments/',
+      );
 
       if (assignmentsResponse.statusCode != 200) {
         throw Exception('Error al descargar las asignaciones de cursos.');
@@ -107,29 +113,49 @@ class StudentDashboard extends StatelessWidget {
     return Scaffold(
       body: Row(
         children: [
-          // PANEL / MENÚ LATERAL IZQUIERDO
+          // PANEL / MENÚ LATERAL IZQUIERDO PREMIUM
           Container(
             width: 100,
-            color: const Color(0xFF1E2638),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF6727E8), Color(0xFF5153E8)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
             child: Column(
               children: [
-                const SizedBox(height: 24),
-                const CircleAvatar(
-                  radius: 24,
-                  backgroundColor: Colors.white24,
-                  child: Icon(Icons.person, color: Colors.white, size: 28),
+                const SizedBox(height: 32),
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const CircleAvatar(
+                    radius: 26,
+                    backgroundColor: Colors.transparent,
+                    child: Icon(Icons.person, color: Colors.white, size: 32),
+                  ),
                 ),
                 const SizedBox(height: 8),
                 const Text(
                   'Estudiante',
                   style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 11,
+                    color: Colors.white,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
                   ),
                 ),
+                const SizedBox(height: 24),
+                const Divider(
+                  color: Colors.white24,
+                  height: 1,
+                  indent: 16,
+                  endIndent: 16,
+                ),
                 const SizedBox(height: 16),
-                const Divider(color: Colors.white12, height: 1),
 
                 Expanded(
                   child: ListView(
@@ -138,43 +164,21 @@ class StudentDashboard extends StatelessWidget {
                       _buildMenuButton(
                         context: context,
                         icon: Icons.assignment_outlined,
-                        label: 'Tareas',
-                        targetPath: '/student/tasks',
-                        currentPath: location,
-                      ),
-                      _buildMenuButton(
-                        context: context,
-                        icon: Icons.upload_file_outlined,
-                        label: 'Entregar',
-                        targetPath: '/student/submit-task',
-                        currentPath: location,
-                      ),
-                      _buildMenuButton(
-                        context: context,
-                        icon: Icons.folder_open_outlined,
-                        label: 'Materiales',
-                        targetPath: '/student/materials',
-                        currentPath: location,
-                      ),
-                      _buildMenuButton(
-                        context: context,
-                        icon: Icons.calendar_today_outlined,
-                        label: 'Asistencia',
-                        targetPath: '/student/attendances',
-                        currentPath: location,
-                      ),
-                      _buildMenuButton(
-                        context: context,
-                        icon: Icons.grade_outlined,
-                        label: 'Notas',
-                        targetPath: '/student/grades',
+                        label: 'Cursos',
+                        targetPath: '/student',
                         currentPath: location,
                       ),
                     ],
                   ),
                 ),
 
-                const Divider(color: Colors.white12, height: 1),
+                const Divider(
+                  color: Colors.white24,
+                  height: 1,
+                  indent: 16,
+                  endIndent: 16,
+                ),
+                const SizedBox(height: 8),
                 _buildMenuButton(
                   context: context,
                   icon: Icons.logout,
@@ -183,7 +187,7 @@ class StudentDashboard extends StatelessWidget {
                   currentPath: location,
                   onTap: () => _logout(context),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
               ],
             ),
           ),
@@ -217,12 +221,10 @@ class StudentDashboard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
         decoration: BoxDecoration(
           border: isSelected
-              ? const Border(
-                  left: BorderSide(color: Colors.blueAccent, width: 4),
-                )
+              ? const Border(left: BorderSide(color: Colors.white, width: 4))
               : null,
           color: isSelected
-              ? Colors.white.withValues(alpha: 0.08)
+              ? Colors.white.withValues(alpha: 0.15)
               : Colors.transparent,
         ),
         child: Column(
@@ -230,7 +232,7 @@ class StudentDashboard extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: isSelected ? Colors.blueAccent : Colors.white70,
+              color: isSelected ? Colors.white : Colors.white70,
               size: 26,
             ),
             const SizedBox(height: 6),
@@ -238,7 +240,7 @@ class StudentDashboard extends StatelessWidget {
               label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.white60,
+                color: isSelected ? Colors.white : Colors.white70,
                 fontSize: 11,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
@@ -260,15 +262,28 @@ class _StudentCoursesDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: const Text(
-          'Tablero',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+          'Tablero Principal',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: 24,
+            color: Colors.white,
+            letterSpacing: -0.5,
+          ),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF6727E8), Color(0xFF5153E8)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        elevation: 10,
+        shadowColor: const Color(0xFF6727E8).withValues(alpha: 0.4),
       ),
       body: FutureBuilder<List<Course>>(
         future: fetchCoursesFuture,
@@ -353,11 +368,12 @@ class _StudentCoursesDashboard extends StatelessWidget {
   }
 
   Widget _buildCourseCard(BuildContext context, Course course, int index) {
+    // Usamos colores elegantes inspirados en la nueva paleta premium
     final List<Color> cardColors = [
-      Colors.blue.shade700,
-      Colors.teal.shade700,
-      Colors.indigo.shade700,
-      Colors.amber.shade800,
+      const Color(0xFF6727E8),
+      const Color(0xFF5153E8),
+      const Color(0xFF4338CA),
+      const Color(0xFF3B82F6),
     ];
     final Color topColor = cardColors[index % cardColors.length];
 
@@ -368,13 +384,12 @@ class _StudentCoursesDashboard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 6,
-              spreadRadius: 1,
-              offset: const Offset(0, 3),
+              color: Colors.black.withValues(alpha: 0.10),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
@@ -382,21 +397,29 @@ class _StudentCoursesDashboard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: 95,
+              height: 100,
               decoration: BoxDecoration(
-                color: topColor,
+                gradient: LinearGradient(
+                  colors: [topColor, topColor.withValues(alpha: 0.8)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
                 ),
               ),
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               alignment: Alignment.bottomLeft,
-              child: const Icon(Icons.school, color: Colors.white38, size: 40),
+              child: const Icon(
+                Icons.school_rounded,
+                color: Colors.white38,
+                size: 48,
+              ),
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(14.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -409,40 +432,52 @@ class _StudentCoursesDashboard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 17,
                             color: Colors.black87,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         Text(
                           course.description,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: Colors.grey.shade600,
-                            fontSize: 12,
+                            fontSize: 13,
+                            height: 1.3,
                           ),
                         ),
                       ],
                     ),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.calendar_month,
-                          size: 14,
-                          color: Colors.grey.shade400,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          course.academicPeriod.name,
-                          style: TextStyle(
-                            color: Colors.grey.shade500,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6727E8).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.calendar_month_rounded,
+                            size: 14,
+                            color: Color(0xFF6727E8),
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 6),
+                          Text(
+                            course.academicPeriod.name,
+                            style: const TextStyle(
+                              color: Color(0xFF6727E8),
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

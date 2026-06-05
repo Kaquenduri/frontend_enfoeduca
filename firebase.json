@@ -1,1 +1,37 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"enfoeduca-lms","appId":"1:999993339088:android:a053df154a0344d60f82d5","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"enfoeduca-lms","configurations":{"android":"1:999993339088:android:a053df154a0344d60f82d5","web":"1:999993339088:web:21a01325acd942830f82d5"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "enfoeduca-lms",
+          "appId": "1:999993339088:android:a053df154a0344d60f82d5",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "enfoeduca-lms",
+          "configurations": {
+            "android": "1:999993339088:android:a053df154a0344d60f82d5",
+            "web": "1:999993339088:web:21a01325acd942830f82d5"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "site": "enfoeduca-lms-48ba2",
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

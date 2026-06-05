@@ -64,7 +64,10 @@ class _StudentTaskDetailViewState extends State<StudentTaskDetailView> {
   }
 
   Future<Map<String, dynamic>> _fetchTaskDetails(String taskId) async {
-    final response = await ApiClient.get(ServiceType.academic, '/tasks/$taskId');
+    final response = await ApiClient.get(
+      ServiceType.academic,
+      '/tasks/$taskId',
+    );
 
     if (response.statusCode == 200) {
       return json.decode(response.body) as Map<String, dynamic>;
@@ -223,20 +226,34 @@ class _StudentTaskDetailViewState extends State<StudentTaskDetailView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        elevation: 0.5,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF6727E8), Color(0xFF5153E8)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        foregroundColor: Colors.white,
+        elevation: 10,
+        shadowColor: const Color(0xFF6727E8).withValues(alpha: 0.4),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.go(
             '/student/course/${widget.courseId}/session/${widget.sessionId}',
           ),
         ),
         title: const Text(
           'Detalle de la Tarea',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
+            color: Colors.white,
+            letterSpacing: -0.5,
+          ),
         ),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
@@ -309,68 +326,94 @@ class _StudentTaskDetailViewState extends State<StudentTaskDetailView> {
               children: [
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 15,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          const Icon(
-                            Icons.assignment,
-                            color: Colors.orangeAccent,
-                            size: 28,
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.orange.withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.assignment_rounded,
+                              color: Colors.orangeAccent,
+                              size: 24,
+                            ),
                           ),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Text(
                               title,
                               style: const TextStyle(
                                 fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w800,
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const Divider(height: 24),
+                      const Divider(height: 32),
                       const Text(
-                        'Instrucciones:',
+                        'Instrucciones',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          fontSize: 15,
+                          color: Color(0xFF6727E8),
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       Text(
                         description,
                         style: TextStyle(
                           color: Colors.grey[800],
                           fontSize: 14,
-                          height: 1.4,
+                          height: 1.5,
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.calendar_month,
-                            size: 16,
-                            color: Colors.redAccent,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Fecha límite: $formattedDueDate',
-                            style: const TextStyle(
+                      const SizedBox(height: 24),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.calendar_month_rounded,
+                              size: 16,
                               color: Colors.redAccent,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 13,
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 8),
+                            Text(
+                              'Límite: $formattedDueDate',
+                              style: const TextStyle(
+                                color: Colors.redAccent,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -402,77 +445,113 @@ class _StudentTaskDetailViewState extends State<StudentTaskDetailView> {
 
       return Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
+            ),
+          ],
         ),
         child: Column(
           children: [
             Icon(
               _selectedFile == null
-                  ? Icons.cloud_upload_outlined
-                  : Icons.insert_drive_file,
-              size: 44,
+                  ? Icons.cloud_upload_rounded
+                  : Icons.insert_drive_file_rounded,
+              size: 56,
               color: _selectedFile == null
                   ? Colors.grey[400]
-                  : Colors.blueAccent,
+                  : const Color(0xFF6727E8),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 16),
             Text(
               _selectedFile == null
                   ? 'Aún no has enviado tu respuesta'
                   : _selectedFile!.name,
               style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: _selectedFile == null ? Colors.grey : Colors.black87,
+                fontWeight: FontWeight.w800,
+                fontSize: 15,
+                color: _selectedFile == null
+                    ? Colors.grey[600]
+                    : Colors.black87,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
+            const SizedBox(height: 24),
+            OutlinedButton.icon(
               onPressed: _isUploading ? null : _pickFile,
-              icon: Icon(_selectedFile == null ? Icons.search : Icons.refresh),
+              icon: Icon(
+                _selectedFile == null ? Icons.search : Icons.refresh_rounded,
+              ),
               label: Text(
                 _selectedFile == null
                     ? 'Seleccionar Archivo'
                     : 'Cambiar Archivo',
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey[200],
-                foregroundColor: Colors.black87,
-                minimumSize: const Size(double.infinity, 45),
-                elevation: 0,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF6727E8),
+                side: BorderSide(
+                  color: _selectedFile == null
+                      ? Colors.grey.shade300
+                      : const Color(0xFF6727E8),
+                ),
+                minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
             ),
             if (_selectedFile != null) ...[
-              const SizedBox(height: 10),
-              ElevatedButton.icon(
-                onPressed: _isUploading
-                    ? null
-                    : () => _submitTask(submissionId),
-                icon: _isUploading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : const Icon(Icons.send_rounded),
-                label: Text(
-                  _isUploading ? 'Subiendo tarea...' : 'Entregar Tarea',
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                height: 50,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF6727E8), Color(0xFF5153E8)],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF6727E8).withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(double.infinity, 45),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                child: ElevatedButton.icon(
+                  onPressed: _isUploading
+                      ? null
+                      : () => _submitTask(submissionId),
+                  icon: _isUploading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Icon(Icons.send_rounded),
+                  label: Text(
+                    _isUploading ? 'Subiendo...' : 'Entregar Tarea',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    foregroundColor: Colors.white,
+                    shadowColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),
@@ -509,10 +588,17 @@ class _StudentTaskDetailViewState extends State<StudentTaskDetailView> {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -521,91 +607,120 @@ class _StudentTaskDetailViewState extends State<StudentTaskDetailView> {
             children: [
               const Text(
                 'Estado:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
               ),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
+                  horizontal: 12,
+                  vertical: 6,
                 ),
                 decoration: BoxDecoration(
                   color: isGraded
                       ? Colors.green.withValues(alpha: 0.1)
-                      : Colors.amber.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(6),
+                      : Colors.orangeAccent.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   isGraded ? 'CALIFICADO' : 'ENTREGADO',
                   style: TextStyle(
-                    color: isGraded ? Colors.green : Colors.amber[800],
-                    fontWeight: FontWeight.bold,
+                    color: isGraded ? Colors.green : Colors.orange.shade800,
+                    fontWeight: FontWeight.w800,
                     fontSize: 12,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           Row(
             children: [
               const Text(
-                'Calificación: ',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                'Calificación:',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
               ),
+              const Spacer(),
               Text(
                 note,
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: isGraded ? Colors.blueAccent : Colors.black54,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  color: isGraded ? const Color(0xFF6727E8) : Colors.black54,
                 ),
               ),
             ],
           ),
-          const Divider(height: 24),
+          const Divider(height: 32),
           if (fileUrl.isNotEmpty) ...[
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(fileIcon, color: iconColor),
-              title: const Text(
-                'Tu archivo entregado',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade200),
+                borderRadius: BorderRadius.circular(12),
               ),
-              subtitle: const Text(
-                'Ver documento enviado',
-                style: TextStyle(fontSize: 11),
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                leading: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: iconColor.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(fileIcon, color: iconColor),
+                ),
+                title: const Text(
+                  'Tu archivo entregado',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+                ),
+                subtitle: const Text(
+                  'Ver documento enviado',
+                  style: TextStyle(fontSize: 12),
+                ),
+                trailing: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF6727E8).withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: Color(0xFF6727E8),
+                    size: 16,
+                  ),
+                ),
+                onTap: () {
+                  _openSubmittedFile(fileUrl);
+                },
               ),
-              trailing: const Icon(
-                Icons.open_in_new,
-                size: 18,
-                color: Colors.blueAccent,
-              ),
-              onTap: () {
-                _openSubmittedFile(fileUrl);
-              },
             ),
-            const Divider(height: 24),
+            const SizedBox(height: 24),
           ],
           const Text(
             'Feedback del Profesor:',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: Color(0xFF6727E8),
+            ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.grey[50],
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey[200]!),
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade200),
             ),
             child: Text(
               comments,
               style: TextStyle(
                 color: Colors.grey[700],
-                fontSize: 13,
+                fontSize: 14,
                 fontStyle: FontStyle.italic,
+                height: 1.4,
               ),
             ),
           ),

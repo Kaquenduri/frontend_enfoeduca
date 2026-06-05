@@ -285,9 +285,30 @@ class _AdminCoursesCrudViewState extends State<AdminCoursesCrudView> {
                   border: OutlineInputBorder(),
                   isDense: true,
                 ),
-                validator: (value) => value == null || value.trim().isEmpty
-                    ? 'El nombre es obligatorio'
-                    : null,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'El nombre del curso es obligatorio';
+                  }
+                  // Rechaza caracteres invisibles (nbsp, zero-width, Alt+255, etc.)
+                  if (value.trim() !=
+                      value
+                          .replaceAll(
+                            RegExp(
+                              r'[\u00A0\u200B\u200C\u200D\uFEFF\u2028\u2029]',
+                            ),
+                            '',
+                          )
+                          .trim()) {
+                    return 'El nombre contiene caracteres invisibles no permitidos';
+                  }
+                  // Solo permite letras (incluyendo tildes/ñ), números, espacios y guiones
+                  if (!RegExp(
+                    r"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\s\-\.]+$",
+                  ).hasMatch(value.trim())) {
+                    return 'Solo se permiten letras, números y espacios';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
 
@@ -296,12 +317,18 @@ class _AdminCoursesCrudViewState extends State<AdminCoursesCrudView> {
                 controller: _descriptionController,
                 maxLines: 3,
                 decoration: const InputDecoration(
-                  labelText: 'Descripción del Curso',
+                  labelText: 'Descripción del Curso *',
                   hintText:
                       'Ej. Curso enfocado en la historia universal y peruana...',
                   border: OutlineInputBorder(),
                   isDense: true,
                 ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'La descripción no puede estar vacía';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
 

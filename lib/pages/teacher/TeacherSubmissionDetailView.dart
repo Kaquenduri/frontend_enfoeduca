@@ -52,6 +52,27 @@ class _TeacherSubmissionDetailViewState
       return;
     }
 
+    final double? parsedNote = double.tryParse(_noteController.text);
+    if (parsedNote == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('La nota debe ser un número válido.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (parsedNote < 0 || parsedNote > 20) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('La nota debe estar entre 0 y 20.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isSaving = true);
     final messenger = ScaffoldMessenger.of(context);
 
@@ -70,7 +91,7 @@ class _TeacherSubmissionDetailViewState
         messenger.showSnackBar(
           const SnackBar(
             content: Text('Calificación guardada con éxito'),
-            backgroundColor: Colors.teal,
+            backgroundColor: const Color(0xFF1E3A8A),
           ),
         );
         if (mounted) Navigator.pop(context);
@@ -113,14 +134,36 @@ class _TeacherSubmissionDetailViewState
     final String submittedAt = widget.submissionData['submitted_at'] ?? '';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        elevation: 0.5,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF1E3A8A), Color(0xFF3B82F6)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        foregroundColor: Colors.white,
+        elevation: 10,
+        shadowColor: const Color(0xFF1E3A8A).withValues(alpha: 0.4),
         title: const Text(
           'Detalle de Entrega',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
+            color: Colors.white,
+            letterSpacing: -0.5,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 18,
+            color: Colors.white,
+          ),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SingleChildScrollView(
@@ -129,19 +172,33 @@ class _TeacherSubmissionDetailViewState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Tarjeta de información del Alumno
-            Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey.shade200),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 child: Row(
                   children: [
-                    const CircleAvatar(
-                      backgroundColor: Colors.teal,
-                      child: Icon(Icons.person, color: Colors.white),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1E3A8A).withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.person_rounded,
+                        color: Color(0xFF1E3A8A),
+                        size: 28,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -151,16 +208,17 @@ class _TeacherSubmissionDetailViewState
                           Text(
                             widget.studentName,
                             style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 16,
+                              color: Colors.black87,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Entregado el: ${submittedAt.split('T')[0]} a las ${submittedAt.split('T')[1].substring(0, 5)}',
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: Colors.grey,
+                            'Entregado: ${submittedAt.split('T')[0]} a las ${submittedAt.split('T')[1].substring(0, 5)}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
                             ),
                           ),
                         ],
@@ -213,13 +271,22 @@ class _TeacherSubmissionDetailViewState
                     ElevatedButton(
                       onPressed: () => _openFile(fileUrl),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        backgroundColor: const Color(
+                          0xFF1E3A8A,
+                        ).withValues(alpha: 0.1),
+                        foregroundColor: const Color(0xFF1E3A8A),
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                       child: const Text(
                         'Ver Archivo',
-                        style: TextStyle(fontSize: 11),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
@@ -251,7 +318,7 @@ class _TeacherSubmissionDetailViewState
               decoration: const InputDecoration(
                 labelText: 'Nota / Calificación',
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.grade, color: Colors.teal),
+                prefixIcon: Icon(Icons.grade, color: const Color(0xFF1E3A8A)),
               ),
             ),
             const SizedBox(height: 16),
@@ -261,7 +328,7 @@ class _TeacherSubmissionDetailViewState
               decoration: const InputDecoration(
                 labelText: 'Comentarios o Retroalimentación',
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.comment, color: Colors.teal),
+                prefixIcon: Icon(Icons.comment, color: const Color(0xFF1E3A8A)),
               ),
             ),
             const SizedBox(height: 24),
@@ -269,22 +336,39 @@ class _TeacherSubmissionDetailViewState
             // Botón de Envío
             SizedBox(
               width: double.infinity,
-              height: 48,
+              height: 54,
               child: ElevatedButton(
                 onPressed: _isSaving ? null : _saveGrade,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
-                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: _isSaving
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        'Guardar Nota y Retroalimentación',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                child: Ink(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF1E3A8A), Color(0xFF3B82F6)],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: _isSaving
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            'Guardar Evaluación',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 16,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                  ),
+                ),
               ),
             ),
           ],

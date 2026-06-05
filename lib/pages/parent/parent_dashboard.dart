@@ -24,35 +24,52 @@ class ParentDashboard extends StatelessWidget {
     return Scaffold(
       body: Row(
         children: [
-          // PANEL LATERAL IZQUIERDO (DISEÑO FAMILIAR)
+          // PANEL LATERAL IZQUIERDO PREMIUM (PADRES)
           Container(
             width: 100,
-            color: const Color(
-              0xFF2C1E3D,
-            ), // Color morado oscuro distintivo para Padres
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF0F766E), Color(0xFF06B6D4)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
             child: Column(
               children: [
-                const SizedBox(height: 24),
-                const CircleAvatar(
-                  radius: 24,
-                  backgroundColor: Colors.amberAccent,
-                  child: Icon(
-                    Icons.family_restroom_rounded,
-                    color: Color(0xFF2C1E3D),
-                    size: 26,
+                const SizedBox(height: 32),
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const CircleAvatar(
+                    radius: 26,
+                    backgroundColor: Colors.transparent,
+                    child: Icon(
+                      Icons.family_restroom_rounded,
+                      color: Colors.white,
+                      size: 32,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),
                 const Text(
                   'Familiar',
                   style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 11,
+                    color: Colors.white,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
                   ),
                 ),
-                const SizedBox(height: 16),
-                const Divider(color: Colors.white12, height: 1),
+                const SizedBox(height: 24),
+                const Divider(
+                  color: Colors.white24,
+                  height: 1,
+                  indent: 16,
+                  endIndent: 16,
+                ),
 
                 // Menú del Padre
                 Expanded(
@@ -70,7 +87,13 @@ class ParentDashboard extends StatelessWidget {
                   ),
                 ),
 
-                const Divider(color: Colors.white12, height: 1),
+                const Divider(
+                  color: Colors.white24,
+                  height: 1,
+                  indent: 16,
+                  endIndent: 16,
+                ),
+                const SizedBox(height: 8),
                 _buildMenuButton(
                   context: context,
                   icon: Icons.logout,
@@ -79,7 +102,7 @@ class ParentDashboard extends StatelessWidget {
                   currentPath: location,
                   onTap: () => _logout(context),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
               ],
             ),
           ),
@@ -107,12 +130,10 @@ class ParentDashboard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
         decoration: BoxDecoration(
           border: isSelected
-              ? const Border(
-                  left: BorderSide(color: Colors.amberAccent, width: 4),
-                )
+              ? const Border(left: BorderSide(color: Colors.white, width: 4))
               : null,
           color: isSelected
-              ? Colors.white.withValues(alpha: 0.06)
+              ? Colors.white.withValues(alpha: 0.15)
               : Colors.transparent,
         ),
         child: Column(
@@ -120,15 +141,15 @@ class ParentDashboard extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: isSelected ? Colors.amberAccent : Colors.white60,
-              size: 24,
+              color: isSelected ? Colors.white : Colors.white70,
+              size: 26,
             ),
             const SizedBox(height: 6),
             Text(
               label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.white60,
+                color: isSelected ? Colors.white : Colors.white70,
                 fontSize: 11,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
@@ -207,15 +228,28 @@ class _ParentStudentsDashboardState extends State<ParentStudentsDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: const Text(
           'Seguimiento Familiar',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: 24,
+            color: Colors.white,
+            letterSpacing: -0.5,
+          ),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF0F766E), Color(0xFF06B6D4)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        elevation: 10,
+        shadowColor: const Color(0xFF0F766E).withValues(alpha: 0.4),
       ),
       body: FutureBuilder<List<dynamic>>(
         future: _fetchStudentsFuture,
@@ -301,10 +335,11 @@ class _ParentStudentsDashboardState extends State<ParentStudentsDashboard> {
   }
 
   Widget _buildStudentCard(BuildContext context, dynamic student, int index) {
+    // Colores cálidos y fríos refinados que contrastan bien
     final List<Color> customColors = [
-      Colors.indigo.shade600,
-      Colors.deepPurple.shade600,
-      Colors.purple.shade700,
+      const Color(0xFF0F766E),
+      const Color(0xFF0369A1),
+      const Color(0xFFB45309),
     ];
     final Color topColor = customColors[index % customColors.length];
 
@@ -345,12 +380,12 @@ class _ParentStudentsDashboardState extends State<ParentStudentsDashboard> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.10),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -359,21 +394,33 @@ class _ParentStudentsDashboardState extends State<ParentStudentsDashboard> {
         children: [
           // Banner Superior - Nombre completo del Alumno
           Container(
-            height: 85,
+            height: 90,
             decoration: BoxDecoration(
-              color: topColor,
+              gradient: LinearGradient(
+                colors: [topColor, topColor.withValues(alpha: 0.8)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
               ),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             alignment: Alignment.centerLeft,
             child: Row(
               children: [
-                const CircleAvatar(
-                  backgroundColor: Colors.white24,
-                  child: Icon(Icons.person_pin_rounded, color: Colors.white),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.person_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -387,18 +434,18 @@ class _ParentStudentsDashboardState extends State<ParentStudentsDashboard> {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 4),
                       Text(
                         studentEmail,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          color: Colors.white60,
-                          fontSize: 11,
+                          color: Colors.white70,
+                          fontSize: 12,
                         ),
                       ),
                     ],
@@ -493,18 +540,28 @@ class _ParentStudentsDashboardState extends State<ParentStudentsDashboard> {
                         onPressed: () {
                           context.go("/parent/student/$studentId");
                         },
-                        icon: const Icon(Icons.analytics_outlined, size: 14),
-                        label: const Text('Ver Rendimiento'),
+                        icon: Icon(
+                          Icons.analytics_rounded,
+                          size: 16,
+                          color: topColor,
+                        ),
+                        label: Text(
+                          'Ver Rendimiento',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: topColor,
+                          ),
+                        ),
                         style: ElevatedButton.styleFrom(
-                          disabledBackgroundColor: Colors.grey.shade100,
-                          disabledForegroundColor: Colors.grey.shade400,
+                          backgroundColor: topColor.withValues(alpha: 0.1),
+                          foregroundColor: topColor,
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
+                            horizontal: 14,
+                            vertical: 10,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                       ),

@@ -43,7 +43,10 @@ class _TeacherTaskSubmissionsViewState
   }
 
   Future<Map<String, dynamic>> _fetchTaskDetailsAndNames(String taskId) async {
-    final response = await ApiClient.get(ServiceType.academic, '/tasks/$taskId');
+    final response = await ApiClient.get(
+      ServiceType.academic,
+      '/tasks/$taskId',
+    );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body) as Map<String, dynamic>;
@@ -63,7 +66,10 @@ class _TeacherTaskSubmissionsViewState
           try {
             await Future.wait(
               missingIds.map((studentId) async {
-                final studentRes = await ApiClient.get(ServiceType.users, '/students/$studentId');
+                final studentRes = await ApiClient.get(
+                  ServiceType.users,
+                  '/students/$studentId',
+                );
 
                 if (studentRes.statusCode == 200) {
                   final studentData =
@@ -102,7 +108,9 @@ class _TeacherTaskSubmissionsViewState
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator(color: Colors.teal)),
+            body: Center(
+              child: CircularProgressIndicator(color: const Color(0xFF1E3A8A)),
+            ),
           );
         } else if (snapshot.hasError) {
           return Scaffold(
@@ -121,13 +129,26 @@ class _TeacherTaskSubmissionsViewState
         final List<dynamic> submissions = taskData['task_submissions'] ?? [];
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF8F9FA),
+          backgroundColor: const Color(0xFFF8FAFC),
           appBar: AppBar(
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black87,
-            elevation: 0.5,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF1E3A8A), Color(0xFF3B82F6)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+            ),
+            foregroundColor: Colors.white,
+            elevation: 10,
+            shadowColor: const Color(0xFF1E3A8A).withValues(alpha: 0.4),
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
+              icon: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                size: 18,
+                color: Colors.white,
+              ),
               onPressed: () => context.go(
                 '/teacher/course/${widget.courseId}/sectionId/${widget.sectionId}/session/${widget.sessionId}',
               ),
@@ -138,13 +159,15 @@ class _TeacherTaskSubmissionsViewState
                 Text(
                   taskTitle,
                   style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
                     fontSize: 16,
+                    color: Colors.white,
+                    letterSpacing: -0.5,
                   ),
                 ),
                 Text(
                   'Total de entregas: ${submissions.length}',
-                  style: const TextStyle(fontSize: 12, color: Colors.teal),
+                  style: const TextStyle(fontSize: 12, color: Colors.white70),
                 ),
               ],
             ),
@@ -157,7 +180,7 @@ class _TeacherTaskSubmissionsViewState
                 if (_isLoadingNames)
                   const Padding(
                     padding: EdgeInsets.only(bottom: 16),
-                    child: LinearProgressIndicator(color: Colors.teal),
+                    child: LinearProgressIndicator(color: Color(0xFF1E3A8A)),
                   ),
                 Expanded(
                   child: submissions.isEmpty
@@ -184,31 +207,62 @@ class _TeacherTaskSubmissionsViewState
                             Color stateColor = Colors.orange;
                             if (state == 'GRADED') stateColor = Colors.green;
 
-                            return Card(
+                            return Container(
                               margin: const EdgeInsets.only(bottom: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
                               child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: stateColor.withValues(alpha: 0.1),
-                                  child: Icon(Icons.person, color: stateColor),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                leading: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: stateColor.withValues(alpha: 0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.person_rounded,
+                                    color: stateColor,
+                                    size: 24,
+                                  ),
                                 ),
                                 title: Text(
                                   studentName,
                                   style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 14,
+                                    color: Colors.black87,
                                   ),
                                 ),
                                 subtitle: Text(
                                   'Estado: $state • Nota: $note',
-                                  style: const TextStyle(fontSize: 11),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey.shade600,
+                                  ),
                                 ),
-                                trailing: const Icon(
-                                  Icons.chevron_right,
-                                  color: Colors.teal,
-                                  size: 18,
+                                trailing: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.chevron_right_rounded,
+                                    size: 16,
+                                    color: Colors.black54,
+                                  ),
                                 ),
                                 onTap: () async {
                                   // Al regresar del detalle, refrescamos por si se guardaron cambios o notas

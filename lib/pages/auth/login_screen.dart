@@ -250,8 +250,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final String authUrl = res.url;
 
-      // Ejecutamos la redirección forzando la misma pestaña del navegador activo
-      await launchUrl(Uri.parse(authUrl), mode: LaunchMode.inAppWebView);
+      // Ejecutamos la redirección forzando la misma pestaña del navegador activo (sin abrir nuevas pestañas)
+      await launchUrl(
+        Uri.parse(authUrl),
+        webOnlyWindowName:
+            '_self', // <--- ESTO FUERZA A USAR LA MISMA PESTAÑA EN WEB
+      );
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -262,151 +266,327 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC), // Un fondo gris claro moderno
-      appBar: AppBar(title: const Text('Login LMS')),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Container(
-            constraints: const BoxConstraints(
-              maxWidth: 450,
-            ), // Hace que el diseño web central no se estire feo
-            padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
+      backgroundColor: Colors.white,
+      body: Row(
+        children: [
+          // Lado Izquierdo (Imagen/Gradiente) - Solo visible en pantallas grandes
+          if (isDesktop)
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF6727E8), Color(0xFF5153E8)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  // Aquí puedes colocar tu imagen en un futuro.
+                  // Asegúrate de tenerla en esa ruta y registrada en pubspec.yaml
+                  image: DecorationImage(
+                    image: const AssetImage('assets/images/login_hero.jpg'),
+                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(
+                      Colors.black.withOpacity(0.3), // Un ligero filtro oscuro
+                      BlendMode.darken,
+                    ),
+                    onError: (exception, stackTrace) {
+                      // Si la imagen aún no existe, fallará silenciosamente mostrando solo el gradiente.
+                    },
+                  ),
                 ),
-              ],
-              border: Border.all(color: Colors.grey.shade200),
+                child: Padding(
+                  padding: const EdgeInsets.all(48.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(Icons.school, size: 64, color: Colors.white),
+                      const SizedBox(height: 24),
+                      const Text(
+                        'EnfoEduca',
+                        style: TextStyle(
+                          fontSize: 48,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          letterSpacing: -1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Plataforma integral para transformar el futuro de la educación.\nGestiona, aprende y crece.',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white.withOpacity(0.9),
+                          fontWeight: FontWeight.w400,
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Inicio de Sesión',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+
+          // Lado Derecho (Formulario)
+          SizedBox(
+            width: isDesktop ? 500 : size.width,
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 40,
                 ),
-                const SizedBox(height: 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment:
+                      CrossAxisAlignment.stretch, // Alinea al ancho
+                  children: [
+                    if (!isDesktop) ...[
+                      const Center(
+                        child: Text(
+                          'EnfoEduca',
+                          style: TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.w900,
+                            color: Color(0xFF6727E8),
+                            letterSpacing: -1.0,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                    ],
 
-                if (_errorMessage != null) ...[
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.red.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(6),
+                    Text(
+                      'Bienvenido de nuevo',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey.shade900,
+                      ),
                     ),
-                    child: Text(
-                      _errorMessage!,
-                      style: const TextStyle(color: Colors.red, fontSize: 13),
-                      textAlign: TextAlign.center,
+                    const SizedBox(height: 8),
+                    Text(
+                      'Ingresa tus credenciales para acceder a tu cuenta.',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
+                    const SizedBox(height: 40),
 
-                TextField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Correo Electrónico',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 16),
+                    if (_errorMessage != null) ...[
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.red.shade200),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              color: Colors.red.shade400,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _errorMessage!,
+                                style: TextStyle(
+                                  color: Colors.red.shade700,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
 
-                TextField(
-                  controller: _passwordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Contraseña',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock),
-                  ),
-                  obscureText: true,
-                ),
-                const SizedBox(height: 24),
-
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _login,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(
-                        0xFF0F172A,
-                      ), // Botón negro moderno
-                      foregroundColor: Colors.white,
+                    Text(
+                      'Correo Electrónico',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade800,
+                      ),
                     ),
-                    child: _isLoading && _emailController.text.isNotEmpty
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            'Iniciar Sesión',
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        hintText: 'ejemplo@enfoeduca.com',
+                        filled: true,
+                        fillColor: Colors.grey.shade50,
+                        prefixIcon: const Icon(
+                          Icons.email_outlined,
+                          color: Color(0xFF6727E8),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade200),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF6727E8),
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 24),
+
+                    Text(
+                      'Contraseña',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        hintText: '••••••••',
+                        filled: true,
+                        fillColor: Colors.grey.shade50,
+                        prefixIcon: const Icon(
+                          Icons.lock_outline,
+                          color: Color(0xFF6727E8),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade200),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF6727E8),
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 32),
+
+                    Container(
+                      height: 52,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF6727E8), Color(0xFF5153E8)],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(
+                              0xFF6727E8,
+                            ).withValues(alpha: 0.3),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        onPressed: _isLoading ? null : _login,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: _isLoading && _emailController.text.isNotEmpty
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : const Text(
+                                'Iniciar Sesión',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+                    Row(
+                      children: [
+                        Expanded(child: Divider(color: Colors.grey.shade200)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            'O continuar con',
                             style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                              color: Colors.grey.shade500,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                  ),
-                ),
+                        ),
+                        Expanded(child: Divider(color: Colors.grey.shade200)),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
 
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(child: Divider(color: Colors.grey.shade300)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text(
-                        'O TAMBIÉN',
-                        style: TextStyle(
-                          color: Colors.grey.shade500,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
+                    // Botón de Google moderno
+                    SizedBox(
+                      height: 52,
+                      child: OutlinedButton.icon(
+                        onPressed: _isLoading ? null : _loginWithGoogle,
+                        icon: SvgPicture.network(
+                          'https://authjs.dev/img/providers/google.svg',
+                          height: 20,
+                        ),
+                        label: const Text(
+                          'Google',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                            fontSize: 15,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          side: BorderSide(color: Colors.grey.shade300),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ),
-                    Expanded(child: Divider(color: Colors.grey.shade300)),
                   ],
                 ),
-                const SizedBox(height: 24),
-
-                // Botón de Google listo para producción
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: OutlinedButton.icon(
-                    onPressed: _isLoading ? null : _loginWithGoogle,
-                    icon: SvgPicture.network(
-                      'https://authjs.dev/img/providers/google.svg',
-                      height: 18,
-                    ),
-                    label: const Text(
-                      'Iniciar Sesión con Google',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                        fontSize: 14,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.grey.shade300),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

@@ -48,7 +48,10 @@ class _StudentSessionMaterialsViewState
   }
 
   Future<Map<String, dynamic>> _fetchSessionDetails(String sessionId) async {
-    final response = await ApiClient.get(ServiceType.academic, '/courses/sessions/$sessionId');
+    final response = await ApiClient.get(
+      ServiceType.academic,
+      '/courses/sessions/$sessionId',
+    );
 
     if (response.statusCode == 200) {
       return json.decode(response.body) as Map<String, dynamic>;
@@ -126,13 +129,22 @@ class _StudentSessionMaterialsViewState
         return DefaultTabController(
           length: 2,
           child: Scaffold(
-            backgroundColor: const Color(0xFFF8F9FA),
+            backgroundColor: const Color(0xFFF8FAFC),
             appBar: AppBar(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black87,
-              elevation: 0.5,
+              flexibleSpace: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF6727E8), Color(0xFF5153E8)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
+              foregroundColor: Colors.white,
+              elevation: 10,
+              shadowColor: const Color(0xFF6727E8).withValues(alpha: 0.4),
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () =>
                     context.go('/student/course/${widget.courseId}'),
               ),
@@ -142,26 +154,26 @@ class _StudentSessionMaterialsViewState
                   Text(
                     sessionName,
                     style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 18,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
                     ),
                   ),
                   _buildAttendanceBadge(attendances, _loggedStudentId),
                 ],
               ),
               bottom: const TabBar(
-                labelColor: Colors.blueAccent,
-                unselectedLabelColor: Colors.black54,
-                indicatorColor: Colors.blueAccent,
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white70,
+                indicatorColor: Colors.white,
+                indicatorWeight: 3,
                 tabs: [
                   Tab(
-                    icon: Icon(Icons.folder_open_outlined),
-                    text: 'Materiales de Clase',
+                    icon: Icon(Icons.folder_open_rounded),
+                    text: 'Materiales',
                   ),
-                  Tab(
-                    icon: Icon(Icons.assignment_outlined),
-                    text: 'Tareas Asignadas',
-                  ),
+                  Tab(icon: Icon(Icons.assignment_rounded), text: 'Tareas'),
                 ],
               ),
             ),
@@ -217,15 +229,15 @@ class _StudentSessionMaterialsViewState
     return Row(
       children: [
         const Text(
-          'Tu Asistencia: ',
-          style: TextStyle(fontSize: 12, color: Colors.grey),
+          'Asistencia: ',
+          style: TextStyle(fontSize: 12, color: Colors.white70),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
           decoration: BoxDecoration(
             color: isPresent
-                ? Colors.green.withValues(alpha: 0.1)
-                : Colors.red.withValues(alpha: 0.1),
+                ? Colors.greenAccent.withValues(alpha: 0.2)
+                : Colors.redAccent.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
@@ -233,7 +245,7 @@ class _StudentSessionMaterialsViewState
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.bold,
-              color: isPresent ? Colors.green : Colors.red,
+              color: isPresent ? Colors.greenAccent : Colors.redAccent,
             ),
           ),
         ),
@@ -268,22 +280,22 @@ class _StudentSessionMaterialsViewState
         }
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 14),
+          margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.02),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
               ),
             ],
           ),
           child: ListTile(
             contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
+              horizontal: 20,
+              vertical: 12,
             ),
             leading: Container(
               padding: const EdgeInsets.all(10),
@@ -295,17 +307,32 @@ class _StudentSessionMaterialsViewState
             ),
             title: Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              style: const TextStyle(
+                fontWeight: FontWeight.w800,
+                fontSize: 15,
+                color: Colors.black87,
+              ),
             ),
             subtitle: Text(
               description,
-              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey[600],
+                height: 1.3,
+              ),
             ),
-            // 3. SE ASOCIA LA ACCIÓN AL BOTÓN DEL COSTADO Y AL TOCAR TODA LA FILA
             onTap: () => _openMaterialUrl(fileUrl),
-            trailing: IconButton(
-              icon: const Icon(Icons.open_in_new, color: Colors.blueAccent),
-              onPressed: () => _openMaterialUrl(fileUrl),
+            trailing: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF6727E8).withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: Color(0xFF6727E8),
+                size: 16,
+              ),
             ),
           ),
         );
@@ -340,22 +367,22 @@ class _StudentSessionMaterialsViewState
         }
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 14),
+          margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.01),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
               ),
             ],
           ),
           child: ListTile(
             contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
+              horizontal: 20,
+              vertical: 12,
             ),
             leading: Container(
               padding: const EdgeInsets.all(10),
@@ -371,23 +398,44 @@ class _StudentSessionMaterialsViewState
             ),
             title: Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-            ),
-            subtitle: Padding(
-              padding: const EdgeInsets.only(top: 4.0),
-              child: Text(
-                'Entregar hasta: $formattedDate',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.redAccent,
-                  fontWeight: FontWeight.w500,
-                ),
+              style: const TextStyle(
+                fontWeight: FontWeight.w800,
+                fontSize: 15,
+                color: Colors.black87,
               ),
             ),
-            trailing: const Icon(
-              Icons.arrow_forward_ios,
-              size: 14,
-              color: Colors.grey,
+            subtitle: Padding(
+              padding: const EdgeInsets.only(top: 6.0),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.calendar_month_rounded,
+                    size: 14,
+                    color: Colors.redAccent.shade200,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Entregar: $formattedDate',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.redAccent.shade700,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            trailing: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: Colors.orangeAccent,
+                size: 16,
+              ),
             ),
             onTap: () {
               context.go(
